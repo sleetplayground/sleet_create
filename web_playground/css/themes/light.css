@@ -1,0 +1,11 @@
+:root {
+    --bg-color: var(--off-white);
+    --text-color: var(--dark);
+    --header-bg: var(--primary-2);
+    --footer-bg: var(--dark);
+    --footer-text: var(--white);
+    --button-bg: var(--primary-2);
+    --button-text: var(--white);
+    --button-hover: var(--primary-3);
+    --button-active: var(--primary-1);
+}
