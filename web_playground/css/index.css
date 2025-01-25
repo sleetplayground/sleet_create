@@ -3,12 +3,14 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 /* Import CSS files */
-@import 'colors.css';
-@import 'fonts.css';
-@import 'layout.css';
-@import 'buttons.css';
-@import 'footer.css';
-@import 'header.css';
+@import './colors.css';
+@import './fonts.css';
+@import './layout.css';
+@import './buttons.css';
+@import './footer.css';
+@import './header.css';
