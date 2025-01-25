@@ -6,6 +6,12 @@
     margin-top: 2rem;
 }
 
+.footer .copyright {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    opacity: 0.8;
+}
+
 .footer-links {
     display: flex;
     justify-content: center;
