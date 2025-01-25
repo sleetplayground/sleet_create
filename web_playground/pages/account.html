@@ -15,6 +15,8 @@
         @import '../css/buttons.css';
         @import '../css/footer.css';
         @import '../css/header.css';
+
+        @import '../css/account.css';
     </style>
 </head>
 <body>
@@ -26,8 +28,33 @@
     </header>
 
     <article class="main-content">
-        <!-- Content will be added later -->
+
+        <div class="account-controls">
+            <button class="button wallet-connect">Connect Wallet</button>
+            <div class="network-toggle">
+                <input type="checkbox" id="network-switch" class="toggle-input">
+                <label for="network-switch" class="toggle-label">
+                    <span class="toggle-text">Testnet</span>
+                    <span class="toggle-text">Mainnet</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="account-form">
+            <input type="text" class="text-input" placeholder="Enter account name">
+            <button class="button create-button">Create</button>
+        </div>
+
+
+        <p>
+            the recommend way for users to create new near accounts
+            is with a near wallet app like meteor wallet or bitte.<br/>
+            only use this tool if you know what you are doing.
+        </p>
+
     </article>
+
+
 
     <footer class="footer">
         <div class="footer-links">
