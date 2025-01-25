@@ -8,7 +8,10 @@ This file is for me to write my ideas for the project, so that you can better he
 
 Step 1
 
-Create a simple
+Create a simple three page website, following the SLEET_DESIGN.md
+The index file should have large button links to to the pages.
+Footer should have links to all pages.
+Other than that ther will be no menu.
 
 
 web_playground
@@ -19,3 +22,7 @@ web_playground
     └── pages
         ├── account.html
         └── sub.html
+
+
+----
+
