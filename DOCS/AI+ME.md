@@ -41,7 +41,7 @@ We need to have something that resembles a form
 
 ---
 
-Step three add functionality
+Step three add functionality to account.html
 
 i decide to remove the save button since we don't need that.
 now it is time to add functionality.
