@@ -23,7 +23,11 @@ class WalletManager {
           setupMyNearWallet(),
           setupNearWallet(),
           setupMeteorWallet()
-        ]
+        ],
+        provider: {
+          type: 'JsonRpcProvider',
+          url: getConfig(this.network).nodeUrl
+        }
       });
 
       this.modal = setupModal(this.selector, {
