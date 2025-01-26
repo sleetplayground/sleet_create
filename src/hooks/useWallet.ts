@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NearWallet } from '../js/nearWallet';
-import type { WalletState, AccountCreationResult } from '../js/nearWallet';
+import type { WalletState, AccountCreationResult } from '../config/near';
 
 export interface UseWalletResult {
   wallet: NearWallet;
@@ -47,13 +47,13 @@ export const useWallet = (): UseWalletResult => {
         setIsConnected(state.isConnected);
         setParentAccount(null);
       } else {
-        const state: WalletState = await wallet.connect();
+        const state = await wallet.connect();
         setIsConnected(state.isConnected);
         if (state.accountId) {
           setParentAccount(state.accountId);
         }
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Wallet connection error:', error);
       setError('Failed to connect wallet. Please try again.');
     }

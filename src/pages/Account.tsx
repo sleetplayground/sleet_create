@@ -1,8 +1,7 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Layout from '../components/Layout';
-import { NearWallet } from '../js/nearWallet';
-import type { WalletState, AccountCreationResult } from '../js/nearWallet';
+import { useWallet } from '../hooks/useWallet';
 import '@near-wallet-selector/modal-ui/styles.css';
 import '../css/index.css';
 import '../css/colors.css';
@@ -14,42 +13,9 @@ import '../css/header.css';
 import '../css/account.css';
 
 const Account = () => {
-  const [wallet] = useState(new NearWallet());
-  const [isConnected, setIsConnected] = useState(false);
+  const { wallet, isConnected, accountInfo, isCreating, error, handleConnect, setError, setIsCreating, setAccountInfo } = useWallet();
   const [accountName, setAccountName] = useState('');
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [accountInfo, setAccountInfo] = useState<AccountCreationResult | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const initWallet = async () => {
-      try {
-        const state = await wallet.init();
-        setIsConnected(state.isConnected);
-      } catch (error) {
-        console.error('Failed to initialize wallet:', error);
-        setError('Failed to initialize wallet. Please try again.');
-      }
-    };
-    initWallet();
-  }, [wallet]);
-
-  const handleConnect = async () => {
-    try {
-      setError(null);
-      if (isConnected) {
-        const state = await wallet.disconnect();
-        setIsConnected(state.isConnected);
-      } else {
-        const state: WalletState = await wallet.connect();
-        setIsConnected(state.isConnected);
-      }
-    } catch (error) {
-      console.error('Wallet connection error:', error);
-      setError('Failed to connect wallet. Please try again.');
-    }
-  };
 
   const handleAccountNameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value.toLowerCase();
@@ -60,7 +26,7 @@ const Account = () => {
       try {
         const available = await wallet.checkAccountAvailability(name + '.testnet');
         setIsAvailable(available);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error checking account availability:', error);
         setError('Failed to check account availability. Please try again.');
       }
@@ -78,7 +44,7 @@ const Account = () => {
     try {
       const result = await wallet.createAccount(accountName);
       setAccountInfo(result);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error creating account:', error);
       setError('Failed to create account. Please try again.');
     } finally {
