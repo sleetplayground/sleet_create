@@ -65,3 +65,7 @@ Step 4 take a new route, move to doing this locally using pnpm as my package man
 some Dependencies are in Dependencies.md
 
 Step 5 a little reset, look at step three for the all the funinally I want.
+
+
+Step 6, use typescipt and react
+doing most of the move myself then having ai help
