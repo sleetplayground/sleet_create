@@ -15,6 +15,7 @@ const SubAccount = () => {
     accountId: string;
     publicKey: string;
     privateKey: string;
+    seedPhrase: string;
   } | null>(null);
 
   return (
@@ -46,6 +47,7 @@ const SubAccount = () => {
               <p><strong>Account ID:</strong> {accountInfo.accountId}</p>
               <p><strong>Public Key:</strong> {accountInfo.publicKey}</p>
               <p><strong>Private Key:</strong> {accountInfo.privateKey}</p>
+              <p><strong>Seed Phrase:</strong> {accountInfo.seedPhrase}</p>
               <p><strong>Important:</strong> Please save this information in a secure place. You will need it to access your account.</p>
             </div>
           )}
