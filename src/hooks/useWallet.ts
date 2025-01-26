@@ -26,10 +26,12 @@ export const useWallet = (): UseWalletResult => {
   useEffect(() => {
     const initWallet = async () => {
       try {
-        const state = await wallet.init();
-        setIsConnected(state.isConnected);
-        if (state.accountId) {
-          setParentAccount(state.accountId);
+        if (!isConnected) {
+          const state = await wallet.init();
+          setIsConnected(state.isConnected);
+          if (state.accountId) {
+            setParentAccount(state.accountId);
+          }
         }
       } catch (error) {
         console.error('Failed to initialize wallet:', error);
@@ -37,7 +39,7 @@ export const useWallet = (): UseWalletResult => {
       }
     };
     initWallet();
-  }, [wallet]);
+  }, [wallet, isConnected]);
 
   const handleConnect = async () => {
     try {

@@ -5,6 +5,7 @@ import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
 import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 import { KeyPair } from 'near-api-js';
+import { JsonRpcProvider } from 'near-api-js/lib/providers';
 import { generateSeedPhrase } from 'near-seed-phrase';
 import { checkAccountAvailability } from './accountUtils';
 import { TESTNET_CONFIG, INITIAL_DEPOSIT, WalletState, AccountCreationResult } from '../config/near';
@@ -22,6 +23,7 @@ export class NearWallet {
   private selector: WalletSelector | null = null;
   private modal: WalletSelectorModal | null = null;
   private wallet: Wallet | null = null;
+  private provider: JsonRpcProvider | null = null;
   private state: WalletState = {
     isConnected: false,
     accountId: null
@@ -29,6 +31,8 @@ export class NearWallet {
 
   async init() {
     if (!this.selector) {
+      this.provider = new JsonRpcProvider({ url: TESTNET_CONFIG.nodeUrl });
+      
       this.selector = await setupWalletSelector({
         network: {
           networkId: TESTNET_CONFIG.networkId,
