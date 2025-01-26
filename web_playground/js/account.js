@@ -1,8 +1,89 @@
-import { setupWalletSelector } from '@near-wallet-selector/core';
-import { setupModal } from '@near-wallet-selector/modal-ui';
-import { setupNearWallet } from '@near-wallet-selector/near-wallet';
-import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
-import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
+// Initialize the page when DOM is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM Content Loaded, waiting for dependencies...');
+    
+    // Wait for all scripts to load
+    const checkDependencies = () => {
+        const dependencies = {
+            core: typeof window["@near-wallet-selector/core"] !== 'undefined' && typeof window["@near-wallet-selector/core"].setupWalletSelector === 'function',
+            modalUi: typeof window["@near-wallet-selector/modal-ui"] !== 'undefined' && typeof window["@near-wallet-selector/modal-ui"].setupModal === 'function',
+            nearWallet: typeof window["@near-wallet-selector/near-wallet"] !== 'undefined' && typeof window["@near-wallet-selector/near-wallet"].setupNearWallet === 'function',
+            myNearWallet: typeof window["@near-wallet-selector/my-near-wallet"] !== 'undefined' && typeof window["@near-wallet-selector/my-near-wallet"].setupMyNearWallet === 'function',
+            meteorWallet: typeof window["@near-wallet-selector/meteor-wallet"] !== 'undefined' && typeof window["@near-wallet-selector/meteor-wallet"].setupMeteorWallet === 'function'
+        };
+
+        const missing = Object.entries(dependencies)
+            .filter(([_, value]) => !value)
+            .map(([key]) => key);
+
+        if (missing.length > 0) {
+            console.warn('Waiting for dependencies:', missing.join(', '));
+            return false;
+        }
+        return true;
+    };
+
+    const waitForDependencies = () => {
+        return new Promise((resolve, reject) => {
+            if (checkDependencies()) {
+                console.log('All dependencies loaded successfully');
+                resolve();
+            } else {
+                console.log('Waiting for dependencies to load...');
+                let attempts = 0;
+                const maxAttempts = 20; // 20 attempts * 500ms = 10 seconds
+                
+                const interval = setInterval(() => {
+                    attempts++;
+                    if (checkDependencies()) {
+                        clearInterval(interval);
+                        console.log('All dependencies loaded successfully');
+                        resolve();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(interval);
+                        const error = new Error('Dependency loading timed out');
+                        console.error(error);
+                        reject(error);
+                    }
+                }, 500);
+            }
+        });
+    };
+
+    try {
+        console.log('Starting dependency check...');
+        await waitForDependencies();
+
+        // Get global objects from CDN scripts
+        const setupWalletSelector = window["@near-wallet-selector/core"]?.setupWalletSelector;
+        const setupModal = window["@near-wallet-selector/modal-ui"]?.setupModal;
+        const setupNearWallet = window["@near-wallet-selector/near-wallet"]?.setupNearWallet;
+        const setupMyNearWallet = window["@near-wallet-selector/my-near-wallet"]?.setupMyNearWallet;
+        const setupMeteorWallet = window["@near-wallet-selector/meteor-wallet"]?.setupMeteorWallet;
+
+        if (!setupWalletSelector || !setupModal || !setupNearWallet || !setupMyNearWallet || !setupMeteorWallet) {
+            throw new Error('One or more NEAR dependencies failed to load properly');
+        }
+        
+        console.log('All NEAR dependencies loaded successfully');
+
+        // Initialize wallet selector
+        await initNear(setupWalletSelector, setupModal, setupNearWallet, setupMyNearWallet, setupMeteorWallet);
+
+        // Set up event listeners
+        document.querySelector('.wallet-connect').addEventListener('click', handleWalletConnection);
+        document.getElementById('network-switch').addEventListener('change', handleNetworkToggle);
+        document.querySelector('.create-button').addEventListener('click', () => {
+            const accountName = document.querySelector('.text-input').value;
+            createAccount(accountName);
+        });
+
+        console.log('Wallet selector and event listeners initialized successfully');
+    } catch (error) {
+        console.error('Error during initialization:', error);
+        alert('Failed to initialize the application. Please refresh the page.');
+    }
+});
 
 // Configuration for NEAR networks
 const config = {
@@ -27,26 +108,33 @@ let selector = null;
 let modal = null;
 
 // Initialize NEAR Wallet Selector
-async function initNear() {
-    selector = await setupWalletSelector({
-        network: currentConfig.networkId,
-        modules: [
-            setupNearWallet(),
-            setupMyNearWallet(),
-            setupMeteorWallet()
-        ],
-    });
+async function initNear(setupWalletSelector, setupModal, setupNearWallet, setupMyNearWallet, setupMeteorWallet) {
+    try {
+        selector = await setupWalletSelector({
+            network: currentConfig.networkId,
+            modules: [
+                setupNearWallet(),
+                setupMyNearWallet(),
+                setupMeteorWallet()
+            ],
+        });
 
-    modal = setupModal(selector, {
-        contractId: 'testnet'
-    });
+        modal = setupModal(selector, {
+            contractId: currentConfig.networkId
+        });
 
-    const state = selector.store.getState();
-    updateWalletButtonState(state);
-
-    selector.store.observable.subscribe((state) => {
+        const state = selector.store.getState();
         updateWalletButtonState(state);
-    });
+
+        selector.store.observable.subscribe((state) => {
+            updateWalletButtonState(state);
+        });
+
+        console.log('NEAR wallet selector initialized successfully');
+    } catch (error) {
+        console.error('Error initializing NEAR wallet selector:', error);
+        alert('Failed to initialize wallet selector. Please refresh the page.');
+    }
 }
 
 // Update wallet button state
@@ -60,24 +148,45 @@ function updateWalletButtonState(state) {
 }
 
 // Handle network toggle
-function handleNetworkToggle() {
+async function handleNetworkToggle() {
     const networkSwitch = document.getElementById('network-switch');
     currentConfig = networkSwitch.checked ? config.mainnet : config.testnet;
     
+    // Get global objects for reinitialization
+    const setupWalletSelector = window["@near-wallet-selector/core"].setupWalletSelector;
+    const setupModal = window["@near-wallet-selector/modal-ui"].setupModal;
+    const setupNearWallet = window["@near-wallet-selector/near-wallet"].setupNearWallet;
+    const setupMyNearWallet = window["@near-wallet-selector/my-near-wallet"].setupMyNearWallet;
+    const setupMeteorWallet = window["@near-wallet-selector/meteor-wallet"].setupMeteorWallet;
+
     // Reinitialize NEAR with new network
-    initNear();
+    await initNear(setupWalletSelector, setupModal, setupNearWallet, setupMyNearWallet, setupMeteorWallet);
 }
 
 // Handle wallet connection
 async function handleWalletConnection() {
-    if (!selector) return;
+    console.log('Handling wallet connection...');
+    if (!selector) {
+        console.error('Wallet selector not initialized');
+        return;
+    }
 
-    const state = selector.store.getState();
-    if (state.accounts.length > 0) {
-        const wallet = await selector.wallet();
-        await wallet.signOut();
-    } else {
-        modal.show();
+    try {
+        const state = selector.store.getState();
+        console.log('Current wallet state:', state);
+
+        if (state.accounts.length > 0) {
+            console.log('Signing out...');
+            const wallet = await selector.wallet();
+            await wallet.signOut();
+            console.log('Successfully signed out');
+        } else {
+            console.log('Opening wallet modal...');
+            modal.show();
+        }
+    } catch (error) {
+        console.error('Error handling wallet connection:', error);
+        alert('Failed to connect wallet. Please try again.');
     }
 }
 
@@ -120,14 +229,14 @@ async function createAccount(accountName) {
 
         // Create account transaction
         const result = await account.functionCall({
-            contractId: currentConfig.networkId,
+            contractId: 'testnet',
             methodName: 'create_account',
             args: {
                 new_account_id: fullAccountName,
-                new_public_key: null // The wallet will automatically use the connected account's public key
+                new_public_key: await wallet.getPublicKey()
             },
             gas: '300000000000000', // 300 TGas
-            amount: '0.1' // 0.1 NEAR for account creation fee
+            amount: '100000000000000000000000' // 0.1 NEAR in yoctoNEAR
         });
 
         alert(`Account ${fullAccountName} created successfully!`);
@@ -137,26 +246,3 @@ async function createAccount(accountName) {
         alert('Error creating account. Please try again.');
     }
 }
-
-// Initialize event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    const networkSwitch = document.getElementById('network-switch');
-    const walletButton = document.querySelector('.wallet-connect');
-    const createButton = document.querySelector('.create-button');
-    const accountInput = document.querySelector('.text-input');
-
-    networkSwitch.addEventListener('change', handleNetworkToggle);
-    walletButton.addEventListener('click', handleWalletConnection);
-    
-    createButton.addEventListener('click', () => {
-        const accountName = accountInput.value.trim();
-        if (accountName) {
-            createAccount(accountName);
-        } else {
-            alert('Please enter an account name');
-        }
-    });
-
-    // Initialize NEAR
-    initNear();
-});

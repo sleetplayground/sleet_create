@@ -28,10 +28,23 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
-    background: var(--primary-2);
+    background: var(--primary-3);
     border-radius: 25px;
     position: relative;
     cursor: pointer;
+}
+
+.toggle-text {
+    color: var(--white);
+    z-index: 1;
+    padding: 0.5rem;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    width: calc(50% - 1rem);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .toggle-label::after {
@@ -46,13 +59,14 @@
 }
 
 .toggle-input:checked + .toggle-label::after {
-    transform: translateX(96px);
+    transform: translateX(92px);
 }
 
-.toggle-text {
-    color: var(--white);
-    z-index: 1;
-    padding: 0 1rem;
+.toggle-input:not(:checked) ~ .toggle-label .toggle-text:first-child,
+.toggle-input:checked ~ .toggle-label .toggle-text:last-child {
+    opacity: 1;
+    font-weight: bold;
+    color: #4CAF50;
 }
 
 .account-form {
