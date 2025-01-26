@@ -10,14 +10,15 @@
   },
   "dependencies": {
     "@near-wallet-selector/core": "^8.9.3",
-    "@near-wallet-selector/modal-ui": "^8.9.3",
     "@near-wallet-selector/meteor-wallet": "^8.9.3",
+    "@near-wallet-selector/modal-ui": "^8.9.3",
     "@near-wallet-selector/my-near-wallet": "^8.9.3",
     "@near-wallet-selector/near-wallet": "^8.9.3",
     "near-api-js": "^2.1.4"
   },
   "devDependencies": {
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-plugin-node-polyfills": "^0.23.0"
   },
   "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
 }
