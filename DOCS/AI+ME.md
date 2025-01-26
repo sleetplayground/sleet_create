@@ -63,3 +63,5 @@ docs
 
 Step 4 take a new route, move to doing this locally using pnpm as my package manager and vite
 some Dependencies are in Dependencies.md
+
+Step 5 a little reset, look at step three for the all the funinally I want.
