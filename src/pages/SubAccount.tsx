@@ -1,4 +1,6 @@
+import React from 'react';
 import { useState } from 'react';
+import Layout from '../components/Layout';
 import '../css/index.css';
 import '../css/colors.css';
 import '../css/fonts.css';
@@ -16,7 +18,7 @@ const SubAccount = () => {
   } | null>(null);
 
   return (
-    <div>
+    <Layout>
       <header className="header">
         <div className="container">
           <h1>Sub Account</h1>
@@ -50,12 +52,12 @@ const SubAccount = () => {
         </div>
 
         <p>
-          The recommended way for users to create new near sub-accounts
-          is with a near wallet app like meteor wallet or bitte.<br/>
+          This is a tool for creating sub accounts.
+          <br/>
           Only use this tool if you know what you are doing.
         </p>
       </article>
-    </div>
+    </Layout>
   );
 };
 

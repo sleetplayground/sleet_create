@@ -1,4 +1,6 @@
+import React from 'react';
 import { useState } from 'react';
+import Layout from '../components/Layout';
 import '../css/index.css';
 import '../css/colors.css';
 import '../css/fonts.css';
@@ -16,7 +18,7 @@ const Account = () => {
   } | null>(null);
 
   return (
-    <div>
+    <Layout>
       <header className="header">
         <div className="container">
           <h1>Account</h1>
@@ -48,8 +50,15 @@ const Account = () => {
             </div>
           )}
         </div>
+
+        <p>
+          The recommended way for users to create new near accounts
+          is with a near wallet app like meteor wallet or bitte.<br/>
+          Only use this tool if you know what you are doing.
+        </p>
+
       </article>
-    </div>
+    </Layout>
   );
 };
 

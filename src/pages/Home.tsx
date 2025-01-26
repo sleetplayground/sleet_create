@@ -1,4 +1,6 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+import Layout from '../components/Layout';
 import '../css/index.css';
 import '../css/colors.css';
 import '../css/fonts.css';
@@ -9,7 +11,7 @@ import '../css/header.css';
 
 const Home = () => {
   return (
-    <div>
+    <Layout>
       <header className="header">
         <div className="container">
           <h1>Sleet Account</h1>
@@ -27,15 +29,7 @@ const Home = () => {
         </p>
       </article>
 
-      <footer className="footer">
-        <div className="footer-links">
-          <Link to="/">Home</Link>
-          <Link to="/account">Account</Link>
-          <Link to="/sub">Sub Account</Link>
-        </div>
-        <div className="copyright">Copyright 2025 by SLEET</div>
-      </footer>
-    </div>
+    </Layout>
   );
 };
 
