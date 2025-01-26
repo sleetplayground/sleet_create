@@ -4,12 +4,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Wait for all scripts to load
     const checkDependencies = () => {
+        // First check if global objects are available
+        if (!window.nearWalletSelector || !window.nearWalletSelectorModal || !window.nearWallet || !window.myNearWallet || !window.meteorWallet) {
+            console.warn('Waiting for script objects to load...');
+            return false;
+        }
+
         const dependencies = {
-            core: typeof window["@near-wallet-selector/core"] !== 'undefined' && typeof window["@near-wallet-selector/core"].setupWalletSelector === 'function',
-            modalUi: typeof window["@near-wallet-selector/modal-ui"] !== 'undefined' && typeof window["@near-wallet-selector/modal-ui"].setupModal === 'function',
-            nearWallet: typeof window["@near-wallet-selector/near-wallet"] !== 'undefined' && typeof window["@near-wallet-selector/near-wallet"].setupNearWallet === 'function',
-            myNearWallet: typeof window["@near-wallet-selector/my-near-wallet"] !== 'undefined' && typeof window["@near-wallet-selector/my-near-wallet"].setupMyNearWallet === 'function',
-            meteorWallet: typeof window["@near-wallet-selector/meteor-wallet"] !== 'undefined' && typeof window["@near-wallet-selector/meteor-wallet"].setupMeteorWallet === 'function'
+            core: typeof window.nearWalletSelector !== 'undefined' && typeof window.nearWalletSelector.setupWalletSelector === 'function',
+            modalUi: typeof window.nearWalletSelectorModal !== 'undefined' && typeof window.nearWalletSelectorModal.setupModal === 'function',
+            nearWallet: typeof window.nearWallet !== 'undefined' && typeof window.nearWallet.setupNearWallet === 'function',
+            myNearWallet: typeof window.myNearWallet !== 'undefined' && typeof window.myNearWallet.setupMyNearWallet === 'function',
+            meteorWallet: typeof window.meteorWallet !== 'undefined' && typeof window.meteorWallet.setupMeteorWallet === 'function'
         };
 
         const missing = Object.entries(dependencies)
@@ -25,23 +31,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const waitForDependencies = () => {
         return new Promise((resolve, reject) => {
+            const dependencies = {
+                core: typeof window.nearWalletSelector !== 'undefined' && typeof window.nearWalletSelector.setupWalletSelector === 'function',
+                modalUi: typeof window.nearWalletSelectorModal !== 'undefined' && typeof window.nearWalletSelectorModal.setupModal === 'function',
+                nearWallet: typeof window.nearWallet !== 'undefined' && typeof window.nearWallet.setupNearWallet === 'function',
+                myNearWallet: typeof window.myNearWallet !== 'undefined' && typeof window.myNearWallet.setupMyNearWallet === 'function',
+                meteorWallet: typeof window.meteorWallet !== 'undefined' && typeof window.meteorWallet.setupMeteorWallet === 'function'
+            };
+
             if (checkDependencies()) {
                 console.log('All dependencies loaded successfully');
                 resolve();
             } else {
                 console.log('Waiting for dependencies to load...');
                 let attempts = 0;
-                const maxAttempts = 20; // 20 attempts * 500ms = 10 seconds
+                const maxAttempts = 100; // 100 attempts * 500ms = 50 seconds
                 
                 const interval = setInterval(() => {
                     attempts++;
-                    if (checkDependencies()) {
+                    const currentMissing = Object.entries(dependencies)
+                        .filter(([_, value]) => !value)
+                        .map(([key]) => key);
+                    
+                    if (currentMissing.length === 0) {
                         clearInterval(interval);
                         console.log('All dependencies loaded successfully');
                         resolve();
                     } else if (attempts >= maxAttempts) {
                         clearInterval(interval);
-                        const error = new Error('Dependency loading timed out');
+                        const error = new Error('Dependency loading timed out. Missing dependencies: ' + currentMissing.join(', '));
                         console.error(error);
                         reject(error);
                     }
@@ -55,11 +73,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         await waitForDependencies();
 
         // Get global objects from CDN scripts
-        const setupWalletSelector = window["@near-wallet-selector/core"]?.setupWalletSelector;
-        const setupModal = window["@near-wallet-selector/modal-ui"]?.setupModal;
-        const setupNearWallet = window["@near-wallet-selector/near-wallet"]?.setupNearWallet;
-        const setupMyNearWallet = window["@near-wallet-selector/my-near-wallet"]?.setupMyNearWallet;
-        const setupMeteorWallet = window["@near-wallet-selector/meteor-wallet"]?.setupMeteorWallet;
+        const setupWalletSelector = window.nearWalletSelector?.setupWalletSelector;
+        const setupModal = window.nearWalletSelectorModal?.setupModal;
+        const setupNearWallet = window.nearWallet?.setupNearWallet;
+        const setupMyNearWallet = window.myNearWallet?.setupMyNearWallet;
+        const setupMeteorWallet = window.meteorWallet?.setupMeteorWallet;
 
         if (!setupWalletSelector || !setupModal || !setupNearWallet || !setupMyNearWallet || !setupMeteorWallet) {
             throw new Error('One or more NEAR dependencies failed to load properly');
