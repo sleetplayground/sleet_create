@@ -1,92 +1,10 @@
 // Initialize the page when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOM Content Loaded, waiting for dependencies...');
-    
-    // Wait for all scripts to load
-    const checkDependencies = () => {
-        // First check if global objects are available
-        if (!window.nearWalletSelector || !window.nearWalletSelectorModal || !window.nearWallet || !window.myNearWallet || !window.meteorWallet) {
-            console.warn('Waiting for script objects to load...');
-            return false;
-        }
-
-        const dependencies = {
-            core: typeof window.nearWalletSelector !== 'undefined' && typeof window.nearWalletSelector.setupWalletSelector === 'function',
-            modalUi: typeof window.nearWalletSelectorModal !== 'undefined' && typeof window.nearWalletSelectorModal.setupModal === 'function',
-            nearWallet: typeof window.nearWallet !== 'undefined' && typeof window.nearWallet.setupNearWallet === 'function',
-            myNearWallet: typeof window.myNearWallet !== 'undefined' && typeof window.myNearWallet.setupMyNearWallet === 'function',
-            meteorWallet: typeof window.meteorWallet !== 'undefined' && typeof window.meteorWallet.setupMeteorWallet === 'function'
-        };
-
-        const missing = Object.entries(dependencies)
-            .filter(([_, value]) => !value)
-            .map(([key]) => key);
-
-        if (missing.length > 0) {
-            console.warn('Waiting for dependencies:', missing.join(', '));
-            return false;
-        }
-        return true;
-    };
-
-    const waitForDependencies = () => {
-        return new Promise((resolve, reject) => {
-            const dependencies = {
-                core: typeof window.nearWalletSelector !== 'undefined' && typeof window.nearWalletSelector.setupWalletSelector === 'function',
-                modalUi: typeof window.nearWalletSelectorModal !== 'undefined' && typeof window.nearWalletSelectorModal.setupModal === 'function',
-                nearWallet: typeof window.nearWallet !== 'undefined' && typeof window.nearWallet.setupNearWallet === 'function',
-                myNearWallet: typeof window.myNearWallet !== 'undefined' && typeof window.myNearWallet.setupMyNearWallet === 'function',
-                meteorWallet: typeof window.meteorWallet !== 'undefined' && typeof window.meteorWallet.setupMeteorWallet === 'function'
-            };
-
-            if (checkDependencies()) {
-                console.log('All dependencies loaded successfully');
-                resolve();
-            } else {
-                console.log('Waiting for dependencies to load...');
-                let attempts = 0;
-                const maxAttempts = 100; // 100 attempts * 500ms = 50 seconds
-                
-                const interval = setInterval(() => {
-                    attempts++;
-                    const currentMissing = Object.entries(dependencies)
-                        .filter(([_, value]) => !value)
-                        .map(([key]) => key);
-                    
-                    if (currentMissing.length === 0) {
-                        clearInterval(interval);
-                        console.log('All dependencies loaded successfully');
-                        resolve();
-                    } else if (attempts >= maxAttempts) {
-                        clearInterval(interval);
-                        const error = new Error('Dependency loading timed out. Missing dependencies: ' + currentMissing.join(', '));
-                        console.error(error);
-                        reject(error);
-                    }
-                }, 500);
-            }
-        });
-    };
-
     try {
-        console.log('Starting dependency check...');
-        await waitForDependencies();
-
-        // Get global objects from CDN scripts
-        const setupWalletSelector = window.nearWalletSelector?.setupWalletSelector;
-        const setupModal = window.nearWalletSelectorModal?.setupModal;
-        const setupNearWallet = window.nearWallet?.setupNearWallet;
-        const setupMyNearWallet = window.myNearWallet?.setupMyNearWallet;
-        const setupMeteorWallet = window.meteorWallet?.setupMeteorWallet;
-
-        if (!setupWalletSelector || !setupModal || !setupNearWallet || !setupMyNearWallet || !setupMeteorWallet) {
-            throw new Error('One or more NEAR dependencies failed to load properly');
-        }
+        console.log('Starting NEAR initialization...');
         
-        console.log('All NEAR dependencies loaded successfully');
-
         // Initialize wallet selector
-        await initNear(setupWalletSelector, setupModal, setupNearWallet, setupMyNearWallet, setupMeteorWallet);
+        await initNear();
 
         // Set up event listeners
         document.querySelector('.wallet-connect').addEventListener('click', handleWalletConnection);
@@ -126,7 +44,7 @@ let selector = null;
 let modal = null;
 
 // Initialize NEAR Wallet Selector
-async function initNear(setupWalletSelector, setupModal, setupNearWallet, setupMyNearWallet, setupMeteorWallet) {
+async function initNear() {
     try {
         selector = await setupWalletSelector({
             network: currentConfig.networkId,
@@ -170,15 +88,8 @@ async function handleNetworkToggle() {
     const networkSwitch = document.getElementById('network-switch');
     currentConfig = networkSwitch.checked ? config.mainnet : config.testnet;
     
-    // Get global objects for reinitialization
-    const setupWalletSelector = window["@near-wallet-selector/core"].setupWalletSelector;
-    const setupModal = window["@near-wallet-selector/modal-ui"].setupModal;
-    const setupNearWallet = window["@near-wallet-selector/near-wallet"].setupNearWallet;
-    const setupMyNearWallet = window["@near-wallet-selector/my-near-wallet"].setupMyNearWallet;
-    const setupMeteorWallet = window["@near-wallet-selector/meteor-wallet"].setupMeteorWallet;
-
     // Reinitialize NEAR with new network
-    await initNear(setupWalletSelector, setupModal, setupNearWallet, setupMyNearWallet, setupMeteorWallet);
+    await initNear();
 }
 
 // Handle wallet connection
