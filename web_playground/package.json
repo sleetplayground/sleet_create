@@ -1,0 +1,22 @@
+{
+  "name": "sleet-account",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@near-wallet-selector/core": "^8.9.3",
+    "@near-wallet-selector/modal-ui": "^8.9.3",
+    "@near-wallet-selector/meteor-wallet": "^8.9.3",
+    "@near-wallet-selector/my-near-wallet": "^8.9.3",
+    "@near-wallet-selector/near-wallet": "^8.9.3",
+    "near-api-js": "^2.1.4"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  }
+}
