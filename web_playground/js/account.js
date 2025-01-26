@@ -1,17 +1,5 @@
-import { setupWalletSelector } from '@near-wallet-selector/core';
-import { setupModal } from '@near-wallet-selector/modal-ui';
-import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
-import { setupNearWallet } from '@near-wallet-selector/near-wallet';
-import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
-import { JsonRpcProvider } from 'near-api-js/lib/providers';
-
-// Configure RPC endpoints
-const TESTNET_RPC_URL = 'https://rpc.testnet.near.org';
-const MAINNET_RPC_URL = 'https://rpc.mainnet.near.org';
-
-let wallet = null;
-let accountId = null;
-let network = 'testnet';
+import { walletManager } from './wallets/near';
+import { createNewAccount } from './utils/createAccount';
 
 // DOM Elements
 const connectButton = document.querySelector('.wallet-connect');
@@ -19,42 +7,60 @@ const networkToggle = document.querySelector('#network-switch');
 const accountInput = document.querySelector('.text-input');
 const createButton = document.querySelector('.create-button');
 
-// Initialize wallet selector with simplified configuration
-async function initWalletSelector() {
+// Initialize the wallet
+async function init() {
     try {
-        console.log(`Initializing wallet selector on ${network}`);
-        const selector = await setupWalletSelector({
-            network: {
-                networkId: network,
-                nodeUrl: network === 'testnet' ? TESTNET_RPC_URL : MAINNET_RPC_URL
-            },
-            modules: [
-                setupMyNearWallet(),
-                setupNearWallet(),
-                setupMeteorWallet()
-            ]
-        });
-
-        const modal = setupModal(selector, {
-            contractId: 'near',
-            theme: 'light',
-            description: 'Please select a wallet to sign in'
-        });
-
-        // Add event listener for modal events
-        modal.on('onHide', () => {
-            console.log('Modal was hidden');
-        });
-
-        modal.on('onSelect', (walletId) => {
-            console.log(`Selected wallet: ${walletId}`);
-        });
-
-        return { selector, modal };
+        await walletManager.init();
+        setupEventListeners();
     } catch (error) {
-        console.error('Failed to initialize wallet selector:', error);
+        console.error('Failed to initialize:', error);
         throw error;
     }
+}
+
+// Set up event listeners for UI elements
+function setupEventListeners() {
+    if (networkToggle) {
+        networkToggle.addEventListener('change', (event) => {
+            const newNetwork = event.target.checked ? 'mainnet' : 'testnet';
+            walletManager.setNetwork(newNetwork);
+        });
+    }
+
+    if (connectButton) {
+        connectButton.addEventListener('click', async () => {
+            const modal = walletManager.getModal();
+            modal.show();
+        });
+    }
+
+    if (createButton && accountInput) {
+        createButton.addEventListener('click', async () => {
+            const accountId = accountInput.value.trim();
+            try {
+                const result = await createNewAccount(accountId);
+                displayAccountInfo(result);
+            } catch (error) {
+                console.error('Failed to create account:', error);
+                alert('Failed to create account: ' + error.message);
+            }
+        });
+    }
+}
+
+// Display the created account information
+function displayAccountInfo(accountInfo) {
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'account-info';
+    infoDiv.innerHTML = `
+        <h3>Account Created Successfully!</h3>
+        <p>Account ID: ${accountInfo.accountId}</p>
+        <p>Network: ${accountInfo.network}</p>
+        <p>Public Key: ${accountInfo.publicKey}</p>
+        <p class="warning">Please save this information securely:</p>
+        <p>Private Key: ${accountInfo.privateKey}</p>
+    `;
+    document.body.appendChild(infoDiv);
 }
 
 // Initialize the wallet connection with improved state management
