@@ -1,5 +1,8 @@
-// Import NEAR API JS
-import { connect, keyStores, WalletConnection } from 'near-api-js';
+import { setupWalletSelector } from '@near-wallet-selector/core';
+import { setupModal } from '@near-wallet-selector/modal-ui';
+import { setupNearWallet } from '@near-wallet-selector/near-wallet';
+import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
+import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 
 // Configuration for NEAR networks
 const config = {
@@ -20,22 +23,36 @@ const config = {
 };
 
 let currentConfig = config.testnet;
-let walletConnection = null;
+let selector = null;
+let modal = null;
 
-// Initialize NEAR
+// Initialize NEAR Wallet Selector
 async function initNear() {
-    const near = await connect({
-        ...currentConfig,
-        keyStore: new keyStores.BrowserLocalStorageKeyStore()
+    selector = await setupWalletSelector({
+        network: currentConfig.networkId,
+        modules: [
+            setupNearWallet(),
+            setupMyNearWallet(),
+            setupMeteorWallet()
+        ],
     });
-    walletConnection = new WalletConnection(near);
-    updateWalletButtonState();
+
+    modal = setupModal(selector, {
+        contractId: 'testnet'
+    });
+
+    const state = selector.store.getState();
+    updateWalletButtonState(state);
+
+    selector.store.observable.subscribe((state) => {
+        updateWalletButtonState(state);
+    });
 }
 
 // Update wallet button state
-function updateWalletButtonState() {
+function updateWalletButtonState(state) {
     const walletButton = document.querySelector('.wallet-connect');
-    if (walletConnection.isSignedIn()) {
+    if (state.accounts.length > 0) {
         walletButton.textContent = 'Disconnect Wallet';
     } else {
         walletButton.textContent = 'Connect Wallet';
@@ -47,26 +64,21 @@ function handleNetworkToggle() {
     const networkSwitch = document.getElementById('network-switch');
     currentConfig = networkSwitch.checked ? config.mainnet : config.testnet;
     
-    // If wallet is connected, disconnect when switching networks
-    if (walletConnection && walletConnection.isSignedIn()) {
-        walletConnection.signOut();
-        updateWalletButtonState();
-    }
-    
     // Reinitialize NEAR with new network
     initNear();
 }
 
 // Handle wallet connection
 async function handleWalletConnection() {
-    if (!walletConnection) return;
+    if (!selector) return;
 
-    if (walletConnection.isSignedIn()) {
-        walletConnection.signOut();
+    const state = selector.store.getState();
+    if (state.accounts.length > 0) {
+        const wallet = await selector.wallet();
+        await wallet.signOut();
     } else {
-        walletConnection.requestSignIn();
+        modal.show();
     }
-    updateWalletButtonState();
 }
 
 // Validate account name
@@ -77,7 +89,13 @@ function validateAccountName(accountName) {
 
 // Create new account
 async function createAccount(accountName) {
-    if (!walletConnection || !walletConnection.isSignedIn()) {
+    if (!selector) {
+        alert('Please wait for wallet initialization');
+        return;
+    }
+
+    const state = selector.store.getState();
+    if (state.accounts.length === 0) {
         alert('Please connect your wallet first');
         return;
     }
@@ -97,9 +115,18 @@ async function createAccount(accountName) {
             return;
         }
 
+        const wallet = await selector.wallet();
+        const account = wallet.account();
+
         // Create account transaction
-        const result = await walletConnection.account().createAccount({
-            newAccountId: fullAccountName,
+        const result = await account.functionCall({
+            contractId: currentConfig.networkId,
+            methodName: 'create_account',
+            args: {
+                new_account_id: fullAccountName,
+                new_public_key: null // The wallet will automatically use the connected account's public key
+            },
+            gas: '300000000000000', // 300 TGas
             amount: '0.1' // 0.1 NEAR for account creation fee
         });
 

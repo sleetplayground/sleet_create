@@ -55,3 +55,9 @@ once the new near account has been created the account info should appear just b
 give me the js and any addition css or html to make this work beatifully.
 I am not sure how all the specifics work, and if all the js needs to all be in one file, but you can figure it out.
 thank you so much!
+
+docs
+- https://docs.near.org/tools/wallet-selector
+
+----
+
