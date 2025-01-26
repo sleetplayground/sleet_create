@@ -4,6 +4,7 @@ import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
 import { setupNearWallet } from '@near-wallet-selector/near-wallet';
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 import * as nearAPI from 'near-api-js';
+import { initNearConnection } from './config.js';
 
 let wallet = null;
 let accountId = null;
@@ -17,16 +18,17 @@ const createButton = document.querySelector('.create-button');
 
 // Initialize wallet selector
 async function initWalletSelector() {
+    const near = await initNearConnection(network);
     const selector = await setupWalletSelector({
         network: network,
         modules: [
             setupMyNearWallet(),
             setupNearWallet(),
             setupMeteorWallet()
-        ],
+        ]
     });
 
-    const modal = setupModal(selector, { contractId: '' });
+    const modal = setupModal(selector, {});
     return { selector, modal };
 }
 
