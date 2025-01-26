@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import '../styles/index.css';
-import '../styles/colors.css';
-import '../styles/fonts.css';
-import '../styles/layout.css';
-import '../styles/buttons.css';
-import '../styles/footer.css';
-import '../styles/header.css';
-import '../styles/account.css';
+import '../css/index.css';
+import '../css/colors.css';
+import '../css/fonts.css';
+import '../css/layout.css';
+import '../css/buttons.css';
+import '../css/footer.css';
+import '../css/header.css';
+import '../css/account.css';
 
 const SubAccount = () => {
   const [accountInfo, setAccountInfo] = useState<{
