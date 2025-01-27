@@ -57,7 +57,7 @@ export const Navigation = () => {
                 <span className={styles.networkToggleInner}></span>
                 <span className={styles.networkToggleSwitch}></span>
               </label>
-              <span className={`ms-2 ${styles.networkLabel}`}>{networkId.toUpperCase()}</span>
+
             </div>
           </div>
           <button className={`btn ${styles.loginButton}`} onClick={action}>
