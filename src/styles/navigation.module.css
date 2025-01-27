@@ -1,0 +1,55 @@
+.navbar {
+  width: 100%;
+  padding: 1rem 2rem;
+  background-color: var(--primary-color);
+  color: var(--light-accent);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.navContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loginButton {
+  background-color: var(--accent-color);
+  color: var(--light-accent);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.loginButton:hover {
+  background-color: var(--secondary-color);
+  color: var(--light-accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background-color: var(--secondary-color);
+    color: var(--light-accent);
+  }
+
+  .loginButton {
+    background-color: var(--primary-color);
+    color: var(--light-accent);
+  }
+
+  .loginButton:hover {
+    background-color: var(--accent-color);
+  }
+}
