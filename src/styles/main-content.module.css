@@ -2,7 +2,8 @@
   text-align: center;
   padding: 2rem;
   max-width: 800px;
-  margin: 6rem auto 8rem;
+  margin: 6rem auto 2rem;
+  min-height: calc(100vh - 200px);
 }
 
 .title {
