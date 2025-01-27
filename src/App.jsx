@@ -18,6 +18,11 @@ function App() {
   }, [wallet]);
 
   const handleNetworkChange = async (newNetwork) => {
+    if (signedAccountId) {
+      const confirmed = window.confirm('Please log out before changing networks to ensure proper wallet state management.');
+      if (!confirmed) return;
+      await wallet.signOut();
+    }
     await wallet.cleanup();
     localStorage.setItem('networkId', newNetwork);
     setNetworkId(newNetwork);
