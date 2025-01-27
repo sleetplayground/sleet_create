@@ -30,3 +30,4 @@ Fonts
 * Monospace Font (for code display):
   * monospace
 
+also text will be all caps.

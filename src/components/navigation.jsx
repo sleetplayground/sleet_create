@@ -1,8 +1,8 @@
 import { useContext,useEffect, useState } from 'react';
 
-import NearLogo from '@/assets/near-logo.svg';
+import SleetLogo from '@/assets/sleet_icon.svg';
 import { NearContext } from '@/wallets/near';
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import styles from '@/styles/app.module.css';
 
 export const Navigation = () => {
@@ -26,7 +26,7 @@ export const Navigation = () => {
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
         <Link to="/">
-          <img src={NearLogo} alt="NEAR" width="30" height="24" className={styles.logo} />
+          <img src={SleetLogo} alt="Sleet" width="30" height="24" className={styles.logo} />
         </Link>
         <div className="navbar-nav pt-1">
           <button className="btn btn-secondary" onClick={action}>
