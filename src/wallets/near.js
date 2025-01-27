@@ -82,11 +82,24 @@ export class Wallet {
   };
 
   /**
+   * Cleanup the wallet selector and its subscriptions
+   */
+  cleanup = async () => {
+    if (this.selector) {
+      const walletSelector = await this.selector;
+      if (walletSelector.store.observable && typeof walletSelector.store.observable.unsubscribe === 'function') {
+        walletSelector.store.observable.unsubscribe();
+      }
+    }
+  };
+
+  /**
    * Logout the user
    */
   signOut = async () => {
     const selectedWallet = await (await this.selector).wallet();
-    selectedWallet.signOut();
+    await selectedWallet.signOut();
+    await this.cleanup();
   };
 
   /**

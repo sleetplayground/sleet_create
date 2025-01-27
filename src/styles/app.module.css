@@ -26,6 +26,21 @@
   color: var(--light-accent);
 }
 
+.networkSelect {
+  background-color: var(--accent-color);
+  color: var(--light-accent);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.networkSelect:hover {
+  background-color: var(--secondary-color);
+}
+
 @media (prefers-color-scheme: dark) {
   .logo {
     filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);

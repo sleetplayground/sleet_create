@@ -1,21 +1,34 @@
 import { Navigation } from './components/navigation';
 import { Footer } from './components/footer';
 import { useEffect, useState } from 'react';
-import { NetworkId } from './config.js';
 import { NearContext, Wallet } from '@/wallets/near';
-
-// Wallet instance
-const wallet = new Wallet({ NetworkId: NetworkId });
 
 function App() {
   const [signedAccountId, setSignedAccountId] = useState(null);
+  const [networkId, setNetworkId] = useState(() => {
+    return localStorage.getItem('networkId') || 'testnet';
+  });
+  const [wallet, setWallet] = useState(() => new Wallet({ networkId }));
 
   useEffect(() => {
     wallet.startUp(setSignedAccountId);
-  }, []);
+    return () => {
+      wallet.cleanup();
+    };
+  }, [wallet]);
+
+  const handleNetworkChange = async (newNetwork) => {
+    await wallet.cleanup();
+    localStorage.setItem('networkId', newNetwork);
+    setNetworkId(newNetwork);
+    const newWallet = new Wallet({ networkId: newNetwork });
+    await newWallet.startUp(setSignedAccountId);
+    setWallet(newWallet);
+    window.location.reload();
+  };
 
   return (
-    <NearContext.Provider value={{ wallet, signedAccountId }}>
+    <NearContext.Provider value={{ wallet, signedAccountId, networkId, onNetworkChange: handleNetworkChange }}>
       <div className="container d-flex flex-column min-vh-100">
         <Navigation />
         <main className="mt-4 flex-grow-1">
