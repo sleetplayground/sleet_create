@@ -1,37 +1,22 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
 import readline from 'readline';
-import { KeyPair } from 'near-api-js';
+import { KeyPair, keyStores } from 'near-api-js';
 import { generateSeedPhrase } from 'near-seed-phrase';
-import { JsonRpcProvider } from 'near-api-js/lib/providers/json-rpc-provider.js';
+import { providers } from 'near-api-js';
+const { JsonRpcProvider } = providers;
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import open from 'open';
 
-interface WalletState {
-  isConnected: boolean;
-  accountId: string | null;
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 interface AccountCreationResult {
   accountId: string;
   publicKey: string;
   privateKey: string;
   seedPhrase: string;
-}
-
-interface Transaction {
-  signerId: string;
-  receiverId: string;
-  actions: Array<{
-    type: string;
-    params: {
-      methodName: string;
-      args: {
-        new_account_id: string;
-        new_public_key: string;
-      };
-      gas: string;
-      deposit: string;
-    };
-  }>;
 }
 
 const TESTNET_CONFIG = {
@@ -43,112 +28,88 @@ const TESTNET_CONFIG = {
   explorerUrl: 'https://explorer.testnet.near.org'
 };
 
-class CLINearWallet {
-  private provider: JsonRpcProvider;
-  private state: WalletState;
+import { setupWalletSelector } from '@near-wallet-selector/core';
+import { setupModal } from '@near-wallet-selector/modal-ui';
+import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
 
-  constructor() {
-    this.provider = new JsonRpcProvider({
-      url: TESTNET_CONFIG.nodeUrl,
-      headers: { 'Content-Type': 'application/json' }
-    });
-    this.state = {
-      isConnected: false,
-      accountId: null
-    };
-  }
-
-  async checkAccountAvailability(accountId: string): Promise<boolean> {
-    try {
-      await this.provider.query({
-        request_type: 'view_account',
-        finality: 'final',
-        account_id: accountId
-      });
-      return false; // Account exists
-    } catch (error: any) {
-      if (error.type === 'AccountDoesNotExist') {
-        return true; // Account is available
-      }
-      throw error;
-    }
-  }
-
-  async createAccount(accountId: string, isSubAccount: boolean = false): Promise<AccountCreationResult> {
-    if (!isSubAccount && !accountId.endsWith('.testnet')) {
-      accountId = `${accountId}.testnet`;
-    }
-
-    const isAvailable = await this.checkAccountAvailability(accountId);
-    if (!isAvailable) {
-      throw new Error('Account ID is not available');
-    }
-
-    const { seedPhrase, secretKey, publicKey } = generateSeedPhrase();
-    const keyPair = KeyPair.fromString(secretKey);
-
-    if (isSubAccount && !this.state.accountId) {
-      throw new Error('Parent account not connected');
-    }
-
-    try {
-      // For sub-accounts, we need to create a transaction
-      if (isSubAccount) {
-        const transaction: Transaction = {
-          signerId: this.state.accountId!,
-          receiverId: 'testnet',
-          actions: [{
-            type: 'FunctionCall',
-            params: {
-              methodName: 'create_account',
-              args: {
-                new_account_id: accountId,
-                new_public_key: publicKey,
-              },
-              gas: '300000000000000',
-              deposit: '100000000000000000000000'
-            }
-          }]
-        };
-
-        // Here you would typically sign and send the transaction
-        // For CLI demo purposes, we'll just return the account info
-      }
-
-      return {
-        accountId,
-        publicKey,
-        privateKey: secretKey,
-        seedPhrase
-      };
-    } catch (error) {
-      console.error('Error creating account:', error);
-      throw new Error('Failed to create account');
-    }
-  }
+interface WalletState {
+  isConnected: boolean;
+  accountId: string | null;
 }
 
-const wallet = new CLINearWallet();
+async function connectWallet(): Promise<WalletState> {
+  const selector = await setupWalletSelector({
+    network: {
+      networkId: TESTNET_CONFIG.networkId,
+      nodeUrl: TESTNET_CONFIG.nodeUrl,
+      helperUrl: TESTNET_CONFIG.helperUrl,
+      indexerUrl: TESTNET_CONFIG.indexerUrl,
+      explorerUrl: TESTNET_CONFIG.explorerUrl
+    },
+    modules: [
+      setupMyNearWallet({
+        walletUrl: TESTNET_CONFIG.walletUrl,
+        iconUrl: 'https://my-near-wallet-beta.near.org/assets/favicon.ico'
+      })
+    ]
+  });
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+  const modal = setupModal(selector, {
+    contractId: 'account-manager.testnet',
+    theme: 'light',
+    description: 'Please connect your wallet to create a new account'
+  });
 
-function askQuestion(query: string): Promise<string> {
-  return new Promise(resolve => rl.question(query, resolve));
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('Connection timeout - please try again'));
+    }, 300000); // 5 minutes timeout
+
+    const handleSignIn = () => {
+      clearTimeout(timeout);
+      const { accounts } = selector.store.getState();
+      if (accounts.length > 0) {
+        resolve({
+          isConnected: true,
+          accountId: accounts[0].accountId
+        });
+      } else {
+        reject(new Error('No account selected'));
+      }
+    };
+
+    const handleClose = () => {
+      clearTimeout(timeout);
+      reject(new Error('Connection cancelled'));
+    };
+
+    selector.on('signedIn', handleSignIn);
+    modal.on('onHide', handleClose);
+    modal.show();
+  });
 }
 
 async function main() {
   try {
-    const accountId = await askQuestion('Enter the desired account name: ');
-    const result = await wallet.createAccount(accountId);
-    console.log('Account created successfully!');
+    console.log('Welcome to NEAR Account Creator CLI!');
+    console.log('This tool will help you create a new NEAR testnet account.\n');
+
+    console.log('First, please connect your existing NEAR wallet...');
+    const walletState = await connectWallet();
+    console.log('\nWallet connected successfully!');
+    console.log('Connected account:', walletState.accountId);
+
+    const accountId = await askQuestion('\nEnter the desired account name (without .testnet): ');
+    const result = await createAccount(accountId);
+
+    console.log('\nAccount creation process initiated!');
+    console.log('Please save the following information securely:\n');
     console.log('Account ID:', result.accountId);
     console.log('Public Key:', result.publicKey);
     console.log('Private Key:', result.privateKey);
     console.log('Seed Phrase:', result.seedPhrase);
-  } catch (error) {
+    console.log('\nIMPORTANT: Save this information in a secure location. You will need it to access your account.');
+  } catch (error: any) {
     console.error('Error:', error.message);
   } finally {
     rl.close();
