@@ -1,0 +1,87 @@
+.accountCreationContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.actionButton {
+  background-color: var(--primary-color);
+  color: var(--light-accent);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.actionButton:hover {
+  background-color: var(--secondary-color);
+}
+
+.actionButton.active {
+  background-color: var(--accent-color);
+}
+
+.formContainer {
+  background-color: var(--background-color);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--input-background);
+  color: var(--text-color);
+}
+
+.submitButton {
+  width: 100%;
+  background-color: var(--accent-color);
+  color: var(--light-accent);
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: var(--secondary-color);
+}
+
+@media (max-width: 600px) {
+  .buttonContainer {
+    flex-direction: column;
+  }
+  
+  .actionButton {
+    width: 100%;
+  }
+}
