@@ -5,9 +5,13 @@
   --max-width: 1100px;
   --border-radius: 12px;
 
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 49, 54, 56;
+  --background-start-rgb: 249, 249, 237;
+  --background-end-rgb: 249, 249, 237;
+  --primary-color: #313638;
+  --secondary-color: #7d84b2;
+  --accent-color: #8e9dcc;
+  --light-accent: #d9dbf1;
 
   --primary-glow: conic-gradient(
     from 180deg at 50% 50%,
@@ -31,16 +35,20 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: 249, 249, 237;
+    --background-start-rgb: 49, 54, 56;
+    --background-end-rgb: 49, 54, 56;
+    --primary-color: #7d84b2;
+    --secondary-color: #8e9dcc;
+    --accent-color: #d9dbf1;
+    --light-accent: #f9f9ed;
 
-    --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
-    --secondary-glow: linear-gradient(to bottom right, rgba(1, 65, 255, 0), rgba(1, 65, 255, 0), rgba(1, 65, 255, 0.3));
+    --primary-glow: radial-gradient(rgba(141, 157, 204, 0.4), rgba(141, 157, 204, 0));
+    --secondary-glow: linear-gradient(to bottom right, rgba(141, 157, 204, 0), rgba(141, 157, 204, 0), rgba(141, 157, 204, 0.3));
 
-    --tile-start-rgb: 2, 13, 46;
-    --tile-end-rgb: 2, 5, 19;
-    --tile-border: conic-gradient(#ffffff80, #ffffff40, #ffffff30, #ffffff20, #ffffff10, #ffffff10, #ffffff80);
+    --tile-start-rgb: 49, 54, 56;
+    --tile-end-rgb: 49, 54, 56;
+    --tile-border: conic-gradient(#d9dbf180, #d9dbf140, #d9dbf130, #d9dbf120, #d9dbf110, #d9dbf110, #d9dbf180);
 
     --callout-rgb: 20, 20, 20;
     --callout-border-rgb: 108, 108, 108;
@@ -67,12 +75,11 @@ body {
   font-family:
     -apple-system,
     BlinkMacSystemFont,
-    Segoe UI,
+    'Segoe UI',
     Roboto,
-    Noto Sans,
+    Oxygen,
     Ubuntu,
-    Droid Sans,
-    Helvetica Neue,
+    Cantarell,
     sans-serif;
 }
 

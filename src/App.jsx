@@ -1,10 +1,8 @@
 import { Navigation } from './components/navigation';
-import Home from './pages/home';
-
+import { Footer } from './components/footer';
 import { useEffect, useState } from 'react';
 import { NetworkId } from './config.js';
 import { NearContext, Wallet } from '@/wallets/near';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Wallet instance
 const wallet = new Wallet({ NetworkId: NetworkId });
@@ -18,12 +16,13 @@ function App() {
 
   return (
     <NearContext.Provider value={{ wallet, signedAccountId }}>
-      <BrowserRouter>
+      <div className="container d-flex flex-column min-vh-100">
         <Navigation />
-        <Routes>
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </BrowserRouter>
+        <main className="mt-4 flex-grow-1">
+          {/* Add your main content components here */}
+        </main>
+        <Footer />
+      </div>
     </NearContext.Provider>
   )
 }
