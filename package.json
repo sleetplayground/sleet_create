@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@near-wallet-selector/core": "^8.9.3",
-    "@near-wallet-selector/meteor-wallet": "^8.9.3",
     "@near-wallet-selector/here-wallet": "^8.9.3",
+    "@near-wallet-selector/meteor-wallet": "^8.9.3",
     "@near-wallet-selector/modal-ui": "^8.9.3",
     "@near-wallet-selector/my-near-wallet": "^8.9.3",
     "near-api-js": "^2.1.4",
@@ -25,6 +25,7 @@
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.8",
     "vite-plugin-node-polyfills": "^0.23.0"

@@ -33,9 +33,12 @@ export const useWallet = (): UseWalletResult => {
             setParentAccount(state.accountId);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to initialize wallet:', error);
-        setError('Failed to initialize wallet. Please try again.');
+        const errorMessage = error.message || 'Failed to initialize wallet. Please try again.';
+        setError(errorMessage);
+        setIsConnected(false);
+        setParentAccount(null);
       }
     };
     initWallet();

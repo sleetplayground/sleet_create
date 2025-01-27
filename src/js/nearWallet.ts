@@ -8,16 +8,8 @@ import { KeyPair } from 'near-api-js';
 import { JsonRpcProvider } from 'near-api-js/lib/providers';
 import { generateSeedPhrase } from 'near-seed-phrase';
 import { checkAccountAvailability } from './accountUtils';
-import { TESTNET_CONFIG, INITIAL_DEPOSIT, WalletState, AccountCreationResult } from '../config/near';
-
-interface CreateAccountAction {
-  type: 'CreateAccount';
-  params: {
-    accountId: string;
-    publicKey: string;
-    amount: string;
-  };
-}
+import { TESTNET_CONFIG, WalletState, AccountCreationResult } from '../config/near';
+import { Action, Transaction } from '@near-wallet-selector/core';
 
 export class NearWallet {
   private selector: WalletSelector | null = null;
@@ -30,59 +22,100 @@ export class NearWallet {
   };
 
   async init() {
-    if (!this.selector) {
-      this.provider = new JsonRpcProvider({ url: TESTNET_CONFIG.nodeUrl });
-      
-      this.selector = await setupWalletSelector({
-        network: {
-          networkId: TESTNET_CONFIG.networkId,
-          nodeUrl: TESTNET_CONFIG.nodeUrl,
-          helperUrl: TESTNET_CONFIG.helperUrl,
-          explorerUrl: TESTNET_CONFIG.explorerUrl,
-          indexerUrl: TESTNET_CONFIG.indexerUrl
-        },
-        modules: [
-          setupMyNearWallet(),
-          setupHereWallet(),
-          setupMeteorWallet()
-        ]
-      });
+    try {
+      if (!this.selector) {
+        this.provider = new JsonRpcProvider({
+          url: TESTNET_CONFIG.nodeUrl,
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        this.selector = await setupWalletSelector({
+          network: {
+            networkId: TESTNET_CONFIG.networkId,
+            nodeUrl: TESTNET_CONFIG.nodeUrl,
+            helperUrl: TESTNET_CONFIG.helperUrl,
+            indexerUrl: TESTNET_CONFIG.indexerUrl,
+            explorerUrl: TESTNET_CONFIG.explorerUrl
+          },
+          modules: [
+            setupMyNearWallet({
+              walletUrl: TESTNET_CONFIG.walletUrl,
+              iconUrl: 'https://my-near-wallet-beta.near.org/assets/favicon.ico'
+            }),
+            setupHereWallet(),
+            setupMeteorWallet()
+          ]
+        });
 
-      const { accounts } = this.selector.store.getState();
-      this.state.isConnected = accounts.length > 0;
-      this.state.accountId = accounts[0]?.accountId || null;
+        const { accounts } = this.selector.store.getState();
+        this.state.isConnected = accounts.length > 0;
+        this.state.accountId = accounts[0]?.accountId || null;
 
-      this.selector.on('signedOut', () => {
-        this.state.isConnected = false;
-        this.state.accountId = null;
-      });
+        this.modal = setupModal(this.selector, {
+          contractId: 'account-manager.testnet',
+          theme: 'light',
+          description: 'Please select a wallet to connect with Sleet Account Manager'
+        });
 
-      this.selector.on('signedIn', async () => {
-        const { accounts } = this.selector!.store.getState();
-        if (accounts.length > 0) {
-          this.state.isConnected = true;
-          this.state.accountId = accounts[0].accountId;
-        }
-      });
+        this.selector.on('signedOut', () => {
+          this.state.isConnected = false;
+          this.state.accountId = null;
+        });
 
-      this.modal = setupModal(this.selector, {
-        contractId: ''
-      });
+        this.selector.on('signedIn', async () => {
+          const { accounts } = this.selector!.store.getState();
+          if (accounts.length > 0) {
+            this.state.isConnected = true;
+            this.state.accountId = accounts[0].accountId;
+          }
+        });
+      }
+
+      return this.state;
+    } catch (error) {
+      console.error('Wallet initialization error:', error);
+      throw new Error('Failed to initialize wallet: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
-
-    return this.state;
   }
 
   async connect() {
     if (!this.selector || !this.modal) {
       await this.init();
     }
-    this.modal!.show();
-    return new Promise<WalletState>((resolve) => {
-      this.selector!.on('signedIn', () => {
-        resolve(this.state);
+    try {
+      if (!this.selector || !this.modal) {
+        throw new Error('Wallet selector or modal not initialized properly');
+      }
+      this.modal.show();
+      return new Promise<WalletState>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Connection timeout - please try again'));
+        }, 300000); // 5 minutes timeout
+
+        const handleSignIn = () => {
+          clearTimeout(timeout);
+          const { accounts } = this.selector!.store.getState();
+          if (accounts.length > 0) {
+            this.state.isConnected = true;
+            this.state.accountId = accounts[0].accountId;
+            resolve(this.state);
+          } else {
+            reject(new Error('No account selected'));
+          }
+        };
+
+        const handleClose = () => {
+          clearTimeout(timeout);
+          reject(new Error('Connection cancelled'));
+        };
+
+        this.selector!.on('signedIn', handleSignIn);
+        this.modal!.on('onHide', handleClose);
       });
-    });
+    } catch (error) {
+      console.error('Connection error:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to connect wallet');
+    }
   }
 
   async disconnect() {
@@ -98,8 +131,17 @@ export class NearWallet {
   }
 
   async createAccount(accountId: string): Promise<AccountCreationResult> {
+    if (!this.state.isConnected || !this.state.accountId) {
+      throw new Error('Wallet not connected');
+    }
+
     if (!accountId.endsWith('.testnet')) {
       accountId = `${accountId}.testnet`;
+    }
+
+    const isAvailable = await this.checkAccountAvailability(accountId);
+    if (!isAvailable) {
+      throw new Error('Account ID is not available');
     }
 
     const { seedPhrase, secretKey, publicKey } = generateSeedPhrase();
@@ -110,20 +152,24 @@ export class NearWallet {
     }
 
     try {
-      const action: CreateAccountAction = {
-        type: 'CreateAccount',
-        params: {
-          accountId: accountId,
-          publicKey: publicKey,
-          amount: INITIAL_DEPOSIT
-        }
+      const transaction: Transaction = {
+        signerId: this.state.accountId,
+        receiverId: 'testnet',
+        actions: [{
+          type: 'FunctionCall',
+          params: {
+            methodName: 'create_account',
+            args: {
+              new_account_id: accountId,
+              new_public_key: publicKey,
+            },
+            gas: '300000000000000',
+            deposit: '100000000000000000000000'
+          }
+        }]
       };
 
-      await this.wallet.signAndSendTransaction({
-        signerId: this.state.accountId!,
-        receiverId: 'testnet',
-        actions: [action]
-      });
+      await this.wallet.signAndSendTransaction(transaction);
 
       return {
         accountId,

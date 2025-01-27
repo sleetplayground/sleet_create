@@ -1,16 +1,15 @@
 import { JsonRpcProvider } from 'near-api-js/lib/providers';
-
-const TESTNET_CONFIG = {
-  networkId: 'testnet',
-  nodeUrl: 'https://rpc.testnet.near.org',
-  walletUrl: 'https://wallet.testnet.near.org',
-  helperUrl: 'https://helper.testnet.near.org',
-  indexerUrl: 'https://api.testnet.near.org'
-};
+import { TESTNET_CONFIG } from '../config/near';
 
 export async function checkAccountAvailability(accountId: string): Promise<boolean> {
+  if (!accountId) return false;
+  
   try {
-    const provider = new JsonRpcProvider({ url: TESTNET_CONFIG.nodeUrl });
+    const provider = new JsonRpcProvider({ 
+      url: TESTNET_CONFIG.nodeUrl,
+      headers: { 'Content-Type': 'application/json' }
+    });
+
     try {
       await provider.query({
         request_type: 'view_account',
@@ -19,10 +18,14 @@ export async function checkAccountAvailability(accountId: string): Promise<boole
       });
       return false; // Account exists
     } catch (error: any) {
-      return error.type === 'AccountDoesNotExist';
+      if (error.type === 'AccountDoesNotExist') {
+        return true; // Account is available
+      }
+      console.error('Error querying account:', error);
+      return false;
     }
   } catch (error) {
-    console.error('Error checking account availability:', error);
+    console.error('Error initializing provider:', error);
     return false;
   }
 }
