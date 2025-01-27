@@ -59,6 +59,9 @@ export class Wallet {
         setupWelldoneWallet(),
         setupMyNearWallet(),
       ],
+      options: {
+        allowAccountCreation: true
+      }
     });
 
     const walletSelector = await this.selector;
@@ -225,6 +228,38 @@ export class Wallet {
       finality: 'final',
     });
     return keys.keys;
+  };
+
+  /**
+   * Creates a new NEAR account
+   * @param {string} newAccountId - the account id to create
+   * @param {string} publicKey - the public key to add to the account
+   * @returns {Promise<void>}
+   */
+  createAccount = async (newAccountId, publicKey) => {
+    const selectedWallet = await (await this.selector).wallet();
+
+    // Create the new account transaction with proper structure
+    const transaction = {
+      receiverId: 'testnet',
+      actions: [
+        {
+          type: 'FunctionCall',
+          params: {
+            methodName: 'create_account',
+            args: {
+              new_account_id: newAccountId,
+              new_public_key: publicKey
+            },
+            gas: '300000000000000',
+            deposit: utils.format.parseNearAmount('0.00182')
+          }
+        }
+      ]
+    };
+
+    // Sign and send the transaction using the selectedWallet
+    await selectedWallet.signAndSendTransactions({ transactions: [transaction] });
   };
 }
 

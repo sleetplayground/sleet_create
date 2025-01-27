@@ -9,7 +9,7 @@ function App() {
   const [networkId, setNetworkId] = useState(() => {
     return localStorage.getItem('networkId') || 'testnet';
   });
-  const [wallet, setWallet] = useState(() => new Wallet({ networkId }));
+  const [wallet, setWallet] = useState(() => new Wallet({ networkId, createAccessKeyFor: signedAccountId }));
 
   useEffect(() => {
     wallet.startUp(setSignedAccountId);
@@ -27,7 +27,7 @@ function App() {
     await wallet.cleanup();
     localStorage.setItem('networkId', newNetwork);
     setNetworkId(newNetwork);
-    const newWallet = new Wallet({ networkId: newNetwork });
+    const newWallet = new Wallet({ networkId: newNetwork, createAccessKeyFor: signedAccountId });
     await newWallet.startUp(setSignedAccountId);
     setWallet(newWallet);
     window.location.reload();
