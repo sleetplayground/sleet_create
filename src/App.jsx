@@ -1,5 +1,6 @@
 import { Navigation } from './components/navigation';
 import { Footer } from './components/footer';
+import { MainContent } from './components/main-content';
 import { useEffect, useState } from 'react';
 import { NearContext, Wallet } from '@/wallets/near';
 
@@ -37,7 +38,7 @@ function App() {
       <div className="container d-flex flex-column min-vh-100">
         <Navigation />
         <main className="mt-4 flex-grow-1">
-          {/* Add your main content components here */}
+          <MainContent />
         </main>
         <Footer />
       </div>
