@@ -1,5 +1,6 @@
 {
-  "name": "hello-near",
+  "name": "sleet-account",
+  "description": "near account creation playground",
   "private": true,
   "version": "1.0.0",
   "type": "module",
