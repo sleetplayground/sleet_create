@@ -1,45 +1,37 @@
-import { KeyPair, utils } from 'near-api-js';
-import { Buffer } from 'buffer';
+import { KeyPair } from 'near-api-js';
 
 export class AccountCreator {
   constructor(wallet) {
     this.wallet = wallet;
   }
 
+  validateAccountId = (accountId) => {
+    if (!accountId) {
+      throw new Error('Account ID is required');
+    }
+
+    if (accountId.length < 2 || accountId.length > 64) {
+      throw new Error('Account ID must be between 2 and 64 characters');
+    }
+
+    if (!/^[a-z0-9-]+$/.test(accountId)) {
+      throw new Error('Account ID can only contain lowercase letters, numbers, and hyphens');
+    }
+
+    if (accountId.startsWith('-') || accountId.endsWith('-')) {
+      throw new Error('Account ID cannot start or end with a hyphen');
+    }
+  }
+
   generateKeyPair = () => {
     const keyPair = KeyPair.fromRandom('ed25519');
     const publicKey = keyPair.getPublicKey().toString();
     const privateKey = keyPair.toString();
-    const seedPhrase = this.generateSeedPhrase();
     
     return {
       publicKey,
-      privateKey,
-      seedPhrase
+      privateKey
     };
-  };
-
-  generateSeedPhrase = () => {
-    // Generate a random 32-byte buffer for the seed phrase
-    const entropy = Buffer.from(Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)));
-    return utils.serialize.base_encode(entropy);
-  };
-
-  validateAccountId = (accountId) => {
-    // Check if account ID already has a network suffix
-    if (accountId.endsWith('.testnet') || accountId.endsWith('.near')) {
-      throw new Error('Please enter the account name without .testnet or .near suffix');
-    }
-
-    // Check for valid characters (lowercase, digits, - or _)
-    if (!/^[a-z0-9-_]+$/.test(accountId)) {
-      throw new Error('Account name can only contain lowercase letters, digits, - or _');
-    }
-
-    // Check length (minimum 2 characters, maximum 32 characters)
-    if (accountId.length < 2 || accountId.length > 32) {
-      throw new Error('Account name must be between 2 and 32 characters long');
-    }
   };
 
   createAccount = async (accountId) => {
@@ -50,7 +42,7 @@ export class AccountCreator {
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
       const fullAccountId = accountId + networkSuffix;
       
-      const { publicKey, privateKey, seedPhrase } = this.generateKeyPair();
+      const { publicKey, privateKey } = this.generateKeyPair();
       
       // Create the account using the wallet's createAccount method
       await this.wallet.createAccount(fullAccountId, publicKey);
@@ -59,7 +51,6 @@ export class AccountCreator {
         accountId,
         publicKey,
         privateKey,
-        seedPhrase,
         success: true
       };
     } catch (error) {
