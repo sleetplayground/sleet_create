@@ -241,7 +241,7 @@ export class Wallet {
 
     // Create the new account transaction with proper structure
     const transaction = {
-      receiverId: 'testnet',
+      receiverId: this.networkId === 'mainnet' ? 'near' : 'testnet',  // Use the correct contract address based on network
       actions: [
         {
           type: 'FunctionCall',
