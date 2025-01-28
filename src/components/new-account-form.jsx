@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import styles from '@/styles/account-creation.module.css';
 import { AccountCreator } from '@/utils/account-creation';
 import { AccountInfoDisplay } from './account-info-display';
@@ -10,6 +10,31 @@ export const NewAccountForm = () => {
   const [accountInfo, setAccountInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [availability, setAvailability] = useState(null);
+  const [isChecking, setIsChecking] = useState(false);
+
+  useEffect(() => {
+    const checkAvailability = async () => {
+      if (!accountId || !wallet) return;
+      
+      setIsChecking(true);
+      setAvailability(null);
+      setError(null);
+
+      try {
+        const accountCreator = new AccountCreator(wallet);
+        const result = await accountCreator.checkAccountAvailability(accountId);
+        setAvailability(result);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    const timeoutId = setTimeout(checkAvailability, 500);
+    return () => clearTimeout(timeoutId);
+  }, [accountId, wallet]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,17 +74,35 @@ export const NewAccountForm = () => {
       <form className={styles.formContainer} onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
           <label htmlFor="accountId">Account Name</label>
-          <input
-            type="text"
-            id="accountId"
-            value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
-            placeholder="Enter account name"
-            required
-          />
+          <div className={styles.inputWrapper}>
+            <input
+              type="text"
+              id="accountId"
+              value={accountId}
+              onChange={(e) => {
+                const value = e.target.value.toLowerCase();
+                if (value === '' || /^[a-z0-9-_]*$/.test(value)) {
+                  setAccountId(value);
+                }
+              }}
+              placeholder="Enter account name (lowercase letters, numbers, hyphens, and underscores only)"
+              pattern="[a-z0-9-_]+"
+              required
+            />
+            {isChecking && <span className={styles.checking}>Checking...</span>}
+            {!isChecking && availability && (
+              <span className={availability.available ? styles.available : styles.unavailable}>
+                {availability.available ? '✓ Available' : '✗ Unavailable'}
+              </span>
+            )}
+          </div>
         </div>
         {error && <div className={styles.error}>{error}</div>}
-        <button type="submit" className={styles.submitButton} disabled={isLoading}>
+        <button 
+          type="submit" 
+          className={styles.submitButton} 
+          disabled={isLoading || isChecking || (availability && !availability.available)}
+        >
           {isLoading ? 'Creating Account...' : 'Create New Account'}
         </button>
       </form>
