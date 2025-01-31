@@ -49,7 +49,7 @@ git remotes
 - https://github.com/sleetplayground/sleet_create.git
 
 ```sh
-git remote add https://github.com/sleetplayground/sleet_create.git
+git remote add github https://github.com/sleetplayground/sleet_create.git
 git push -u github main
 ```
 
