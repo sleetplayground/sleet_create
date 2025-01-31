@@ -5,6 +5,13 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    cors: {
+      origin: ['https://projects.gitlab.io', 'https://gitlab.com'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      credentials: true
+    }
+  },
   plugins: [react(), eslint()],
   resolve: {
     alias: {
