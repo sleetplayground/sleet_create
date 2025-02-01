@@ -26,7 +26,14 @@ export default defineConfig({
       output: {
         manualChunks: undefined
       }
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true
     }
+  },
+  define: {
+    global: 'globalThis',
+    'process.env': {}
   },
   plugins: [react(), eslint()],
   resolve: {
@@ -36,6 +43,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    include: ['buffer'],
     esbuildOptions: {
       define: {
         global: 'globalThis'
