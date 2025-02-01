@@ -52,7 +52,7 @@ git remotes
 
 ```sh
 git remote add github https://github.com/sleetplayground/sleet_create.git
-git push -u github main
+git push github main
 ```
 
 
