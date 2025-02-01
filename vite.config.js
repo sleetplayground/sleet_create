@@ -35,6 +35,7 @@ export default defineConfig({
     },
     force: true,
     include: [
+      'buffer',
       '@near-wallet-selector/core',
       '@near-wallet-selector/modal-ui',
       '@near-wallet-selector/my-near-wallet',
