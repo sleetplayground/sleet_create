@@ -6,6 +6,7 @@ using https://github.com/vgrichina/web4-min-contract
 first deploy web4-min-contract
 ```sh
 near deploy create.sleet.testnet web4-min.wasm
+near deploy sleetcreate.testnet web4-min.wasm
 near deploy create.sleet.near web4-min.wasm
 ```
 
@@ -21,6 +22,7 @@ deploy
 
 ```sh
 npx web4-deploy dist create.sleet.testnet --nearfs
+npx web4-deploy dist sleetcreate.testnet --nearfs
 npx web4-deploy dist create.sleet.near --nearfs
 ```
 - can be run with or without --nearfs
