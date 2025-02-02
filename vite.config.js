@@ -47,7 +47,6 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['buffer'],
       output: {
         globals: {
           buffer: 'Buffer'

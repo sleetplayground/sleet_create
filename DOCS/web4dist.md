@@ -29,14 +29,7 @@ npx web4-deploy dist sleetcreate.near --nearfs
 ```
 - can be run with or without --nearfs
 
-get ipf url from last command
-```sh
-near call <contract_id> <method_name> '{"url":"ipfs://bafybeidr3fmocmsvy4wkj2lpjuycbblxrqtipo3j76son5b6fxfhn4mwim"}'
 
-near call create.sleet.testnet web4_setStaticUrl  '{"url":"ipfs://bafybeidr3fmocmsvy4wkj2lpjuycbblxrqtipo3j76son5b6fxfhn4mwim"}' --use-account  create.sleet.testnet
-
-near call create.sleet.near web4_setStaticUrl  '{"url":"ipfs://bafybeidr3fmocmsvy4wkj2lpjuycbblxrqtipo3j76son5b6fxfhn4mwim"}' --use-account create.sleet.near
-```
 
 
 also locally with ipfs
