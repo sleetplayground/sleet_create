@@ -16,11 +16,6 @@ export default defineConfig({
     'global': 'globalThis',
     'process.env': {},
     'process.env.NODE_DEBUG': 'false',
-    'global.Buffer': ['buffer', 'Buffer'],
-    'global.Buffer.isBuffer': ['buffer', 'Buffer', 'isBuffer'],
-    'global.Buffer.from': ['buffer', 'Buffer', 'from'],
-    'global.Buffer.alloc': ['buffer', 'Buffer', 'alloc'],
-    'global.Buffer.allocUnsafe': ['buffer', 'Buffer', 'allocUnsafe']
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -52,22 +47,10 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      external: ['buffer'],
       output: {
-        manualChunks: {
-          'near-api': ['near-api-js', '@near-js/providers', '@near-js/utils'],
-          'wallet-selector': [
-            '@near-wallet-selector/core',
-            '@near-wallet-selector/modal-ui',
-            '@near-wallet-selector/my-near-wallet',
-            '@near-wallet-selector/sender',
-            '@near-wallet-selector/here-wallet',
-            '@near-wallet-selector/meteor-wallet',
-            '@near-wallet-selector/near-mobile-wallet',
-            '@near-wallet-selector/welldone-wallet',
-            '@near-wallet-selector/bitte-wallet',
-            '@near-wallet-selector/ledger',
-            '@near-wallet-selector/ethereum-wallets'
-          ]
+        globals: {
+          buffer: 'Buffer'
         }
       }
     }

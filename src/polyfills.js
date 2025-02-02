@@ -5,52 +5,27 @@ if (typeof window !== 'undefined') {
   window.global = window;
   window.process = window.process || { env: {} };
   window.globalThis = window.globalThis || window;
-  window.Buffer = Buffer;
 }
 
-// Make sure Buffer methods are available globally
-if (typeof Buffer !== 'undefined') {
-  window.Buffer.from = Buffer.from;
-  window.Buffer.alloc = Buffer.alloc;
-  window.Buffer.allocUnsafe = Buffer.allocUnsafe;
-  window.Buffer.isBuffer = Buffer.isBuffer;
-}
+// Initialize Buffer globally
 const initBuffer = () => {
   const target = typeof globalThis !== 'undefined' ? globalThis : 
                 typeof window !== 'undefined' ? window : 
                 typeof self !== 'undefined' ? self : 
                 this;
 
-  // Create a new Buffer constructor with all methods bound
-  const BufferClass = function(...args) {
-    return Buffer.apply(this, args);
-  };
-  Object.setPrototypeOf(BufferClass, Buffer);
-  BufferClass.prototype = Buffer.prototype;
-
-  // Explicitly bind all Buffer methods
-  BufferClass.from = Buffer.from.bind(Buffer);
-  BufferClass.alloc = Buffer.alloc.bind(Buffer);
-  BufferClass.allocUnsafe = Buffer.allocUnsafe.bind(Buffer);
-  BufferClass.isBuffer = Buffer.isBuffer.bind(Buffer);
-  BufferClass.concat = Buffer.concat.bind(Buffer);
-  BufferClass.byteLength = Buffer.byteLength.bind(Buffer);
-
-  // Assign to target
-  target.Buffer = BufferClass;
+  target.Buffer = Buffer;
+  target.Buffer.from = Buffer.from.bind(Buffer);
+  target.Buffer.alloc = Buffer.alloc.bind(Buffer);
+  target.Buffer.allocUnsafe = Buffer.allocUnsafe.bind(Buffer);
+  target.Buffer.isBuffer = Buffer.isBuffer.bind(Buffer);
 
   // Ensure Buffer is available on window if in browser environment
   if (typeof window !== 'undefined') {
     window.Buffer = target.Buffer;
   }
-
-  // Ensure Buffer is available on globalThis
-  if (typeof globalThis !== 'undefined') {
-    globalThis.Buffer = target.Buffer;
-  }
 };
 
-// Execute Buffer initialization immediately
 initBuffer();
 
 // Re-export Buffer for modules that import it directly
