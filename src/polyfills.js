@@ -5,9 +5,16 @@ if (typeof window !== 'undefined') {
   window.global = window;
   window.process = window.process || { env: {} };
   window.globalThis = window.globalThis || window;
+  window.Buffer = Buffer;
 }
 
-// Initialize Buffer globally first
+// Make sure Buffer methods are available globally
+if (typeof Buffer !== 'undefined') {
+  window.Buffer.from = Buffer.from;
+  window.Buffer.alloc = Buffer.alloc;
+  window.Buffer.allocUnsafe = Buffer.allocUnsafe;
+  window.Buffer.isBuffer = Buffer.isBuffer;
+}
 const initBuffer = () => {
   const target = typeof globalThis !== 'undefined' ? globalThis : 
                 typeof window !== 'undefined' ? window : 

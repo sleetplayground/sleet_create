@@ -16,10 +16,11 @@ export default defineConfig({
     'global': 'globalThis',
     'process.env': {},
     'process.env.NODE_DEBUG': 'false',
-    'Buffer': ['buffer', 'Buffer'],
-    'Buffer.isBuffer': ['buffer', 'Buffer', 'isBuffer'],
-    'Buffer.from': ['buffer', 'Buffer', 'from'],
-    'Buffer.alloc': ['buffer', 'Buffer', 'alloc']
+    'global.Buffer': ['buffer', 'Buffer'],
+    'global.Buffer.isBuffer': ['buffer', 'Buffer', 'isBuffer'],
+    'global.Buffer.from': ['buffer', 'Buffer', 'from'],
+    'global.Buffer.alloc': ['buffer', 'Buffer', 'alloc'],
+    'global.Buffer.allocUnsafe': ['buffer', 'Buffer', 'allocUnsafe']
   },
   optimizeDeps: {
     esbuildOptions: {
