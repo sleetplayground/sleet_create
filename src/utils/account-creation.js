@@ -157,24 +157,34 @@ export class AccountCreator {
       try {
         const selectedWallet = await walletSelector.wallet();
         
-        // Create the sub-account using the create_account function call
+        // Create the sub-account using NEAR protocol's built-in actions
         const actions = [
           {
-            type: 'FunctionCall',
+            type: 'CreateAccount',
             params: {
-              methodName: 'create_account',
-              args: {
-                new_account_id: fullSubAccountId,
-                new_public_key: publicKey
-              },
-              gas: '300000000000000',
-              deposit: initialBalance
+              new_account_id: fullSubAccountId
+            }
+          },
+          {
+            type: 'Transfer',
+            params: {
+              deposit: '1000000000000000000000000' // 1 NEAR in yoctoNEAR
+            }
+          },
+          {
+            type: 'AddKey',
+            params: {
+              public_key: publicKey,
+              access_key: {
+                nonce: 0,
+                permission: 'FullAccess'
+              }
             }
           }
         ];
 
         await selectedWallet.signAndSendTransaction({
-          receiverId: fullParentId,
+          receiverId: fullSubAccountId,
           actions: actions
         });
 
