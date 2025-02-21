@@ -1,5 +1,5 @@
 import styles from '@/styles/account-creation.module.css';
-
+import { AccountCreator } from '@/utils/account-creation';
 import { useState } from 'react';
 import { useWallet } from '@near-wallet-selector/core';
 
