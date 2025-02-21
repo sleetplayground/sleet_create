@@ -121,4 +121,53 @@ export class AccountCreator {
       };
     }
   };
+
+  validateSubAccountId = (subAccountId, parentAccountId) => {
+    // First validate the basic account ID format
+    this.validateAccountId(subAccountId);
+
+    // Check if the sub-account follows the parent account pattern
+    const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
+    const fullParentId = parentAccountId + networkSuffix;
+    const fullSubAccountId = subAccountId + '.' + fullParentId;
+
+    if (fullSubAccountId.length > 64) {
+      throw new Error('Full sub-account ID must be 64 characters or less');
+    }
+
+    // Ensure the sub-account name doesn't contain the parent account name
+    if (subAccountId.includes(parentAccountId)) {
+      throw new Error('Sub-account name should not contain the parent account name');
+    }
+  };
+
+  createSubAccount = async (subAccountId, parentAccountId, initialBalance = '1') => {
+    try {
+      this.validateSubAccountId(subAccountId, parentAccountId);
+      
+      // Construct the full sub-account ID
+      const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
+      const fullParentId = parentAccountId + networkSuffix;
+      const fullSubAccountId = subAccountId + '.' + fullParentId;
+      
+      const { publicKey, privateKey } = this.generateKeyPair();
+      
+      // Create the sub-account using the wallet's createAccount method
+      // The parent account must be the signer
+      await this.wallet.createAccount(fullSubAccountId, publicKey, initialBalance);
+
+      return {
+        accountId: fullSubAccountId,
+        publicKey,
+        privateKey,
+        success: true
+      };
+    } catch (error) {
+      console.error('Error creating sub-account:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  };
 }
