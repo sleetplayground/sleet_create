@@ -5,7 +5,6 @@ import { NearContext } from '@/wallets/near';
 
 export const SubAccountForm = () => {
   const [subAccountId, setSubAccountId] = useState('');
-  const [initialBalance, setInitialBalance] = useState('1');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
@@ -29,7 +28,7 @@ export const SubAccountForm = () => {
 
     try {
       const accountCreator = new AccountCreator(wallet);
-      const result = await accountCreator.createSubAccount(subAccountId, signedAccountId, initialBalance);
+      const result = await accountCreator.createSubAccount(subAccountId, signedAccountId);
 
       if (result.success) {
         setSuccess(true);
@@ -61,18 +60,6 @@ export const SubAccountForm = () => {
               }}
               placeholder="Enter sub-account name"
               pattern="[a-z0-9-_]+"
-              required
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="initialBalance">Initial Balance (NEAR):</label>
-            <input
-              type="number"
-              id="initialBalance"
-              value={initialBalance}
-              onChange={(e) => setInitialBalance(e.target.value)}
-              min="0.1"
-              step="0.1"
               required
             />
           </div>

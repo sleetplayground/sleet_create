@@ -133,7 +133,7 @@ export class AccountCreator {
     }
   };
 
-  createSubAccount = async (subAccountId, parentAccountId, initialBalance = '1') => {
+  createSubAccount = async (subAccountId, parentAccountId) => {
     try {
       const walletSelector = await this.wallet.selector;
       const isSignedIn = walletSelector.isSignedIn();
