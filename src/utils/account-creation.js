@@ -155,10 +155,10 @@ export class AccountCreator {
       const { publicKey, privateKey } = this.generateKeyPair();
       
       try {
-        // Get the parent account
-        const parentAccount = await this.wallet.account();
+        // Get the selected wallet
+        const selectedWallet = await walletSelector.wallet();
         
-        // Create the sub-account using the parent account's create_account method
+        // Create the sub-account using transaction actions
         const actions = [
           {
             type: 'CreateAccount',
@@ -181,8 +181,8 @@ export class AccountCreator {
           }
         ];
 
-        // Execute the transaction
-        await parentAccount.signAndSendTransaction({
+        // Execute the transaction using the wallet selector
+        await selectedWallet.signAndSendTransaction({
           receiverId: fullSubAccountId,
           actions: actions
         });
