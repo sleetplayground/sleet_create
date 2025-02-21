@@ -135,7 +135,10 @@ export class AccountCreator {
 
   createSubAccount = async (subAccountId, parentAccountId, initialBalance = '1') => {
     try {
-      if (!this.wallet.isSignedIn()) {
+      const walletSelector = await this.wallet.selector;
+      const isSignedIn = walletSelector.isSignedIn();
+      
+      if (!isSignedIn) {
         throw new Error('You must be signed in to create a sub-account');
       }
 
