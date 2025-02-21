@@ -175,7 +175,6 @@ export class AccountCreator {
             params: {
               public_key: publicKey,
               access_key: {
-                nonce: 0,
                 permission: 'FullAccess'
               }
             }
