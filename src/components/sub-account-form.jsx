@@ -1,7 +1,8 @@
 import styles from '@/styles/account-creation.module.css';
 import { AccountCreator } from '@/utils/account-creation';
 import { useState } from 'react';
-import { useWallet } from '@near-wallet-selector/core';
+import { useContext } from 'react';
+import { NearContext } from '@/wallets/near';
 
 export const SubAccountForm = () => {
   const [subAccountId, setSubAccountId] = useState('');
@@ -10,7 +11,7 @@ export const SubAccountForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
-  const wallet = useWallet();
+  const { wallet } = useContext(NearContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
