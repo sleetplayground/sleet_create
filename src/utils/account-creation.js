@@ -150,13 +150,42 @@ export class AccountCreator {
       
       // Check if parent account already includes network suffix
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
-      const fullParentId = parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix;
       const fullSubAccountId = `${subAccountId}.${parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix}`;
       
       const { publicKey, privateKey } = this.generateKeyPair();
       
       try {
-        await this.wallet.createAccount(fullSubAccountId, publicKey, initialBalance);
+        // Get the parent account
+        const parentAccount = await this.wallet.account();
+        
+        // Create the sub-account using the parent account's create_account method
+        const actions = [
+          {
+            type: 'CreateAccount',
+            params: {}
+          },
+          {
+            type: 'Transfer',
+            params: {
+              deposit: initialBalance
+            }
+          },
+          {
+            type: 'AddKey',
+            params: {
+              publicKey: publicKey,
+              accessKey: {
+                permission: 'FullAccess'
+              }
+            }
+          }
+        ];
+
+        // Execute the transaction
+        await parentAccount.signAndSendTransaction({
+          receiverId: fullSubAccountId,
+          actions: actions
+        });
 
         return {
           accountId: fullSubAccountId,
