@@ -1,17 +1,15 @@
+import { useState, useContext } from 'react';
 import styles from '@/styles/account-creation.module.css';
 import { AccountCreator } from '@/utils/account-creation';
-import { useState } from 'react';
-import { useContext } from 'react';
 import { NearContext } from '@/wallets/near';
 
 export const SubAccountForm = () => {
   const [subAccountId, setSubAccountId] = useState('');
-  const [parentAccountId, setParentAccountId] = useState('');
   const [initialBalance, setInitialBalance] = useState('1');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
-  const { wallet } = useContext(NearContext);
+  const { wallet, signedAccountId } = useContext(NearContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,9 +17,19 @@ export const SubAccountForm = () => {
     setSuccess(false);
     setAccountInfo(null);
 
+    if (!wallet) {
+      setError('Please connect your wallet first');
+      return;
+    }
+
+    if (!signedAccountId) {
+      setError('Please sign in to create a sub-account');
+      return;
+    }
+
     try {
       const accountCreator = new AccountCreator(wallet);
-      const result = await accountCreator.createSubAccount(subAccountId, parentAccountId, initialBalance);
+      const result = await accountCreator.createSubAccount(subAccountId, signedAccountId, initialBalance);
 
       if (result.success) {
         setSuccess(true);
@@ -45,19 +53,14 @@ export const SubAccountForm = () => {
               type="text"
               id="subAccountId"
               value={subAccountId}
-              onChange={(e) => setSubAccountId(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.toLowerCase();
+                if (value === '' || /^[a-z0-9-_]*$/.test(value)) {
+                  setSubAccountId(value);
+                }
+              }}
               placeholder="Enter sub-account name"
-              required
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="parentAccountId">Parent Account ID:</label>
-            <input
-              type="text"
-              id="parentAccountId"
-              value={parentAccountId}
-              onChange={(e) => setParentAccountId(e.target.value)}
-              placeholder="Enter parent account ID"
+              pattern="[a-z0-9-_]+"
               required
             />
           </div>

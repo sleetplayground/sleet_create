@@ -25,15 +25,12 @@ export class AccountCreator {
 
   checkAccountAvailability = async (accountId) => {
     try {
-      // First validate the account ID format
       this.validateAccountId(accountId);
       
-      // Append the network suffix
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
       const fullAccountId = accountId + networkSuffix;
       
       try {
-        // Try to get the account state instead of just balance
         const provider = new providers.JsonRpcProvider({ url: `https://rpc.${this.wallet.networkId}.near.org` });
         await provider.query({
           request_type: 'view_account',
@@ -46,7 +43,6 @@ export class AccountCreator {
           error: 'Account already exists'
         };
       } catch (error) {
-        // Check for specific RPC error codes that indicate account doesn't exist
         const errorMessage = error.toString().toLowerCase();
         if (
           errorMessage.includes('does not exist') ||
@@ -60,7 +56,6 @@ export class AccountCreator {
           };
         }
 
-        // For connection or RPC errors, we should be more informative
         if (errorMessage.includes('failed to fetch') || errorMessage.includes('network error')) {
           return {
             available: false,
@@ -68,14 +63,12 @@ export class AccountCreator {
           };
         }
 
-        // For any other errors, return as unavailable with a clearer error message
         return {
           available: false,
           error: 'Unable to verify account availability: ' + error.message
         };
       }
     } catch (error) {
-      // This is for validation errors
       return {
         available: false,
         error: error.message || 'Invalid account format'
@@ -98,13 +91,11 @@ export class AccountCreator {
     try {
       this.validateAccountId(accountId);
       
-      // Append the network suffix based on the wallet's network
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
       const fullAccountId = accountId + networkSuffix;
       
       const { publicKey, privateKey } = this.generateKeyPair();
       
-      // Create the account using the wallet's createAccount method
       await this.wallet.createAccount(fullAccountId, publicKey);
 
       return {
@@ -123,10 +114,8 @@ export class AccountCreator {
   };
 
   validateSubAccountId = (subAccountId, parentAccountId) => {
-    // First validate the basic account ID format
     this.validateAccountId(subAccountId);
 
-    // Check if the sub-account follows the parent account pattern
     const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
     const fullParentId = parentAccountId + networkSuffix;
     const fullSubAccountId = subAccountId + '.' + fullParentId;
@@ -135,33 +124,48 @@ export class AccountCreator {
       throw new Error('Full sub-account ID must be 64 characters or less');
     }
 
-    // Ensure the sub-account name doesn't contain the parent account name
     if (subAccountId.includes(parentAccountId)) {
       throw new Error('Sub-account name should not contain the parent account name');
+    }
+
+    if (subAccountId.includes('.')) {
+      throw new Error('Sub-account name cannot contain dots');
     }
   };
 
   createSubAccount = async (subAccountId, parentAccountId, initialBalance = '1') => {
     try {
+      if (!this.wallet.isSignedIn()) {
+        throw new Error('You must be signed in to create a sub-account');
+      }
+
+      if (!parentAccountId) {
+        throw new Error('Parent account ID is required');
+      }
+
       this.validateSubAccountId(subAccountId, parentAccountId);
       
-      // Construct the full sub-account ID
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
       const fullParentId = parentAccountId + networkSuffix;
       const fullSubAccountId = subAccountId + '.' + fullParentId;
       
       const { publicKey, privateKey } = this.generateKeyPair();
       
-      // Create the sub-account using the wallet's createAccount method
-      // The parent account must be the signer
-      await this.wallet.createAccount(fullSubAccountId, publicKey, initialBalance);
+      try {
+        await this.wallet.createAccount(fullSubAccountId, publicKey, initialBalance);
 
-      return {
-        accountId: fullSubAccountId,
-        publicKey,
-        privateKey,
-        success: true
-      };
+        return {
+          accountId: fullSubAccountId,
+          publicKey,
+          privateKey,
+          success: true
+        };
+      } catch (error) {
+        if (error.message.includes('cannot be created by')) {
+          throw new Error('You do not have permission to create sub-accounts. Make sure you are using the correct parent account.');
+        }
+        throw error;
+      }
     } catch (error) {
       console.error('Error creating sub-account:', error);
       return {
