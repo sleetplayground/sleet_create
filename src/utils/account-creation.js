@@ -148,9 +148,10 @@ export class AccountCreator {
 
       this.validateSubAccountId(subAccountId, parentAccountId);
       
+      // Check if parent account already includes network suffix
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
-      const fullParentId = parentAccountId + networkSuffix;
-      const fullSubAccountId = subAccountId + '.' + fullParentId;
+      const fullParentId = parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix;
+      const fullSubAccountId = `${subAccountId}.${parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix}`;
       
       const { publicKey, privateKey } = this.generateKeyPair();
       

@@ -236,12 +236,16 @@ export class Wallet {
    * @param {string} publicKey - the public key to add to the account
    * @returns {Promise<void>}
    */
-  createAccount = async (newAccountId, publicKey) => {
+  createAccount = async (newAccountId, publicKey, initialBalance = '0.00182') => {
     const selectedWallet = await (await this.selector).wallet();
+
+    // Determine if this is a sub-account creation by checking for dots in the account ID
+    const isSubAccount = newAccountId.split('.').length > 2; // e.g. sub.parent.testnet has 3 parts
+    const parentAccountId = isSubAccount ? newAccountId.split('.').slice(1).join('.') : null;
 
     // Create the new account transaction with proper structure
     const transaction = {
-      receiverId: this.networkId === 'mainnet' ? 'near' : 'testnet',  // Use the correct contract address based on network
+      receiverId: isSubAccount ? parentAccountId : (this.networkId === 'mainnet' ? 'near' : 'testnet'),
       actions: [
         {
           type: 'FunctionCall',
@@ -252,7 +256,7 @@ export class Wallet {
               new_public_key: publicKey
             },
             gas: '300000000000000',
-            deposit: utils.format.parseNearAmount('0.00182')
+            deposit: utils.format.parseNearAmount(initialBalance)
           }
         }
       ]
