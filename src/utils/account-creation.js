@@ -152,12 +152,11 @@ export class AccountCreator {
       const fullParentId = parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix;
       const fullSubAccountId = `${subAccountId}.${fullParentId}`;
       
-      const { publicKey } = this.generateKeyPair();
+      const { publicKey, privateKey } = this.generateKeyPair();
       
       try {
         const selectedWallet = await walletSelector.wallet();
         
-        // Create the sub-account using NEAR protocol's built-in actions
         const actions = [
           {
             type: 'CreateAccount',
@@ -191,6 +190,7 @@ export class AccountCreator {
         return {
           accountId: fullSubAccountId,
           publicKey,
+          privateKey,
           success: true
         };
       } catch (error) {
