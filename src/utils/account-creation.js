@@ -148,49 +148,39 @@ export class AccountCreator {
 
       this.validateSubAccountId(subAccountId, parentAccountId);
       
-      // Check if parent account already includes network suffix
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
-      const fullSubAccountId = `${subAccountId}.${parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix}`;
+      const fullParentId = parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix;
+      const fullSubAccountId = `${subAccountId}.${fullParentId}`;
       
-      const { publicKey, privateKey } = this.generateKeyPair();
+      const { publicKey } = this.generateKeyPair();
       
       try {
-        // Get the selected wallet
         const selectedWallet = await walletSelector.wallet();
         
-        // Create the sub-account using transaction actions
+        // Create the sub-account using the create_account function call
         const actions = [
           {
-            type: 'CreateAccount',
-            params: {}
-          },
-          {
-            type: 'Transfer',
+            type: 'FunctionCall',
             params: {
+              methodName: 'create_account',
+              args: {
+                new_account_id: fullSubAccountId,
+                new_public_key: publicKey
+              },
+              gas: '300000000000000',
               deposit: initialBalance
-            }
-          },
-          {
-            type: 'AddKey',
-            params: {
-              publicKey: publicKey,
-              accessKey: {
-                permission: 'FullAccess'
-              }
             }
           }
         ];
 
-        // Execute the transaction using the wallet selector
         await selectedWallet.signAndSendTransaction({
-          receiverId: fullSubAccountId,
+          receiverId: fullParentId,
           actions: actions
         });
 
         return {
           accountId: fullSubAccountId,
           publicKey,
-          privateKey,
           success: true
         };
       } catch (error) {
