@@ -1,6 +1,6 @@
 import styles from '@/styles/main-content.module.css';
 import { AccountCreationButtons } from './account-creation-buttons';
-import { SeedPhraseGenerator } from './seed-phrase-generator';
+
 
 export const MainContent = () => {
   return (
@@ -11,7 +11,6 @@ export const MainContent = () => {
       <div className={styles.notice}>
         <p>NOTE: THE RECOMMEND WAY FOR USERS TO CREATE NEW NEAR ACCOUNTS IS WITH A NEAR WALLET APP LIKE METEOR WALLET OR BITTE. ONLY USE THIS TOOL IF YOU KNOW WHAT YOU ARE DOING!</p>
       </div>
-      <SeedPhraseGenerator />
     </div>
   );
 };
