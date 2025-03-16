@@ -32,6 +32,8 @@ export default defineConfig({
     force: true,
     include: [
       'buffer',
+      'crypto',
+      'near-seed-phrase',
       '@near-wallet-selector/core',
       '@near-wallet-selector/modal-ui',
       '@near-wallet-selector/my-near-wallet',

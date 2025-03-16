@@ -1,10 +1,12 @@
 import { Buffer } from 'buffer';
+import { webcrypto } from 'crypto';
 
 // Ensure global objects are available
 if (typeof window !== 'undefined') {
   window.global = window;
   window.process = window.process || { env: {} };
   window.globalThis = window.globalThis || window;
+  window.crypto = window.crypto || webcrypto;
 }
 
 // Initialize Buffer globally

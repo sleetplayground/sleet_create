@@ -1,4 +1,4 @@
-import { generateSeedPhrase, parseSeedPhrase } from 'near-seed-phrase';
+const { generateSeedPhrase, parseSeedPhrase } = require('near-seed-phrase');
 
 export const generateNewSeedPhrase = () => {
   const { seedPhrase, publicKey, secretKey } = generateSeedPhrase();
