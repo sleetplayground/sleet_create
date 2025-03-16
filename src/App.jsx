@@ -21,7 +21,7 @@ function App() {
     
     localStorage.setItem('networkId', newNetwork);
     window.location.reload();
-  }, [wallet, signedAccountId]);
+  }, [signedAccountId]);
 
   return (
     <NearContext.Provider value={{ wallet, signedAccountId, networkId, onNetworkChange: handleNetworkChange }}>
