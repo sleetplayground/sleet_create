@@ -59,9 +59,6 @@ export class Wallet {
         setupWelldoneWallet(),
         setupMyNearWallet(),
       ],
-      options: {
-        allowAccountCreation: true
-      }
     });
 
     const walletSelector = await this.selector;
@@ -85,24 +82,11 @@ export class Wallet {
   };
 
   /**
-   * Cleanup the wallet selector and its subscriptions
-   */
-  cleanup = async () => {
-    if (this.selector) {
-      const walletSelector = await this.selector;
-      if (walletSelector.store.observable && typeof walletSelector.store.observable.unsubscribe === 'function') {
-        walletSelector.store.observable.unsubscribe();
-      }
-    }
-  };
-
-  /**
    * Logout the user
    */
   signOut = async () => {
     const selectedWallet = await (await this.selector).wallet();
-    await selectedWallet.signOut();
-    await this.cleanup();
+    selectedWallet.signOut();
   };
 
   /**
@@ -228,42 +212,6 @@ export class Wallet {
       finality: 'final',
     });
     return keys.keys;
-  };
-
-  /**
-   * Creates a new NEAR account
-   * @param {string} newAccountId - the account id to create
-   * @param {string} publicKey - the public key to add to the account
-   * @returns {Promise<void>}
-   */
-  createAccount = async (newAccountId, publicKey, initialBalance = '0.00182') => {
-    const selectedWallet = await (await this.selector).wallet();
-
-    // Determine if this is a sub-account creation by checking for dots in the account ID
-    const isSubAccount = newAccountId.split('.').length > 2; // e.g. sub.parent.testnet has 3 parts
-    const parentAccountId = isSubAccount ? newAccountId.split('.').slice(1).join('.') : null;
-
-    // Create the new account transaction with proper structure
-    const transaction = {
-      receiverId: isSubAccount ? parentAccountId : (this.networkId === 'mainnet' ? 'near' : 'testnet'),
-      actions: [
-        {
-          type: 'FunctionCall',
-          params: {
-            methodName: 'create_account',
-            args: {
-              new_account_id: newAccountId,
-              new_public_key: publicKey
-            },
-            gas: '300000000000000',
-            deposit: utils.format.parseNearAmount(initialBalance)
-          }
-        }
-      ]
-    };
-
-    // Sign and send the transaction using the selectedWallet
-    await selectedWallet.signAndSendTransactions({ transactions: [transaction] });
   };
 }
 
