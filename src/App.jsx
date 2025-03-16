@@ -1,32 +1,34 @@
 import { Navigation } from './components/navigation';
 import { Footer } from './components/footer';
 import { MainContent } from './components/main-content';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { NearContext, Wallet } from '@/wallets/near';
+import { networkConfig } from '@/services/network-config';
 
 function App() {
   const [signedAccountId, setSignedAccountId] = useState(null);
-  const [networkId, setNetworkId] = useState(() => {
-    return localStorage.getItem('networkId') || 'testnet';
-  });
+  const [networkId, setNetworkId] = useState(() => networkConfig.getCurrentNetwork());
   const [wallet, setWallet] = useState(() => new Wallet({ networkId, createAccessKeyFor: signedAccountId }));
 
   useEffect(() => {
     wallet.startUp(setSignedAccountId);
+    const unsubscribe = networkConfig.addListener(setNetworkId);
+    return () => unsubscribe();
   }, [wallet]);
 
-  const handleNetworkChange = async (newNetwork) => {
+  const handleNetworkChange = useCallback(async (newNetwork) => {
     if (signedAccountId) {
       const confirmed = window.confirm('Please log out before changing networks to ensure proper wallet state management.');
       if (!confirmed) return;
       await wallet.signOut();
     }
-    localStorage.setItem('networkId', newNetwork);
-    setNetworkId(newNetwork);
-    const newWallet = new Wallet({ networkId: newNetwork, createAccessKeyFor: signedAccountId });
-    await newWallet.startUp(setSignedAccountId);
-    setWallet(newWallet);
-    window.location.reload();
+    
+    const success = await networkConfig.switchNetwork(newNetwork);
+    if (success) {
+      const newWallet = new Wallet({ networkId: newNetwork, createAccessKeyFor: signedAccountId });
+      await newWallet.startUp(setSignedAccountId);
+      setWallet(newWallet);
+    }
   };
 
   return (
