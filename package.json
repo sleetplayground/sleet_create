@@ -30,6 +30,7 @@
     "@web3modal/wagmi": "^5.1.11",
     "buffer": "^6.0.3",
     "near-api-js": "^5.1.0",
+    "near-seed-phrase": "^0.2.1",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
