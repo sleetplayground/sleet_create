@@ -6,7 +6,7 @@ import { NearContext } from '@/wallets/near';
 export const Navigation = () => {
   const { networkId, onNetworkChange, signedAccountId, wallet } = useContext(NearContext);
 
-  const handleNetworkToggle = (e) => {
+  const handleNetworkToggle = async (e) => {
     const newNetwork = e.target.checked ? 'mainnet' : 'testnet';
     onNetworkChange(newNetwork);
   };
