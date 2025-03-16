@@ -12,6 +12,8 @@ export const NewAccountForm = () => {
   const [error, setError] = useState(null);
   const [availability, setAvailability] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
+  const [providedPublicKey, setProvidedPublicKey] = useState('');
+  const [generatedKeyPair, setGeneratedKeyPair] = useState(null);
 
   useEffect(() => {
     const checkAvailability = async () => {
@@ -69,6 +71,13 @@ export const NewAccountForm = () => {
     }
   };
 
+  const handleGenerateKeyPair = () => {
+    const accountCreator = new AccountCreator(wallet);
+    const newKeyPair = accountCreator.generateKeyPair();
+    setGeneratedKeyPair(newKeyPair);
+    setProvidedPublicKey(newKeyPair.publicKey);
+  };
+
   return (
     <div>
       <form className={styles.formContainer} onSubmit={handleSubmit}>
@@ -97,13 +106,43 @@ export const NewAccountForm = () => {
             )}
           </div>
         </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="publicKey">Public Key</label>
+          <div className={styles.inputWrapper}>
+            <input
+              type="text"
+              id="publicKey"
+              value={providedPublicKey}
+              onChange={(e) => setProvidedPublicKey(e.target.value)}
+              placeholder="Enter or generate a public key"
+              required
+            />
+            <button
+              type="button"
+              className={styles.generateButton}
+              onClick={handleGenerateKeyPair}
+            >
+              Generate New Keypair
+            </button>
+          </div>
+        </div>
         {error && <div className={styles.error}>{error}</div>}
-        <button 
-          type="submit" 
-          className={styles.submitButton} 
-          disabled={isLoading || isChecking || (availability && !availability.available)}
+        {generatedKeyPair && !accountInfo && (
+          <div className={styles.keyPairInfo}>
+            <h3>Generated Key Pair</h3>
+            <p>Public Key: {generatedKeyPair.publicKey}</p>
+            <p>Private Key: {generatedKeyPair.privateKey}</p>
+            <div className={styles.warning}>
+              <p>⚠️ IMPORTANT: Save your private key in a secure place. Never share it with anyone!</p>
+            </div>
+          </div>
+        )}
+        <button
+          type="submit"
+          className={styles.submitButton}
+          disabled={isLoading || !availability?.available || !providedPublicKey}
         >
-          {isLoading ? 'Creating Account...' : 'Create New Account'}
+          {isLoading ? 'Creating...' : 'Create Account'}
         </button>
       </form>
       {accountInfo && <AccountInfoDisplay accountInfo={accountInfo} />}

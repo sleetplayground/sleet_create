@@ -87,14 +87,21 @@ export class AccountCreator {
     };
   };
 
-  createAccount = async (accountId) => {
+  createAccount = async (accountId, providedPublicKey = null) => {
     try {
       this.validateAccountId(accountId);
       
       const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
       const fullAccountId = accountId + networkSuffix;
       
-      const { publicKey, privateKey } = this.generateKeyPair();
+      let publicKey = providedPublicKey;
+      let privateKey = null;
+      
+      if (!providedPublicKey) {
+        const keyPair = this.generateKeyPair();
+        publicKey = keyPair.publicKey;
+        privateKey = keyPair.privateKey;
+      }
       
       await this.wallet.createAccount(fullAccountId, publicKey);
 
