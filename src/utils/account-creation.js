@@ -131,9 +131,7 @@ export class AccountCreator {
             public_key: publicKey,
             access_key: {
               nonce: 0,
-              permission: {
-                type: 'FullAccess'
-              }
+              permission: "FullAccess"
             }
           }
         }
@@ -241,22 +239,29 @@ export class AccountCreator {
         ];
 
         try {
-        await selectedWallet.signAndSendTransaction({
-          receiverId: fullSubAccountId,
-          actions: actions
-        });
+          await selectedWallet.signAndSendTransaction({
+            receiverId: fullSubAccountId,
+            actions: actions
+          });
 
-        return {
-          accountId: fullSubAccountId,
-          publicKey,
-          privateKey,
-          success: true
-        };
-      } catch (error) {
-        if (error.message.includes('cannot be created by')) {
-          throw new Error('You do not have permission to create sub-accounts. Make sure you are using the correct parent account.');
+          return {
+            accountId: fullSubAccountId,
+            publicKey,
+            privateKey,
+            success: true
+          };
+        } catch (error) {
+          if (error.message.includes('cannot be created by')) {
+            throw new Error('You do not have permission to create sub-accounts. Make sure you are using the correct parent account.');
+          }
+          throw error;
         }
-        throw error;
+      } catch (error) {
+        console.error('Error creating sub-account:', error);
+        return {
+          success: false,
+          error: error.message
+        };
       }
     } catch (error) {
       console.error('Error creating sub-account:', error);
