@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer as NodeBuffer } from 'buffer';
 
 // Ensure global objects are available
 if (typeof window !== 'undefined') {
@@ -14,16 +14,21 @@ const initBuffer = () => {
                 typeof self !== 'undefined' ? self : 
                 this;
 
-  target.Buffer = Buffer;
-  target.Buffer.from = Buffer.from.bind(Buffer);
-  target.Buffer.alloc = Buffer.alloc.bind(Buffer);
-  target.Buffer.allocUnsafe = Buffer.allocUnsafe.bind(Buffer);
-  target.Buffer.isBuffer = Buffer.isBuffer.bind(Buffer);
+  // Only set Buffer if it's not already defined
+  if (!target.Buffer) {
+    target.Buffer = NodeBuffer;
+    target.Buffer.from = NodeBuffer.from.bind(NodeBuffer);
+    target.Buffer.alloc = NodeBuffer.alloc.bind(NodeBuffer);
+    target.Buffer.allocUnsafe = NodeBuffer.allocUnsafe.bind(NodeBuffer);
+    target.Buffer.isBuffer = NodeBuffer.isBuffer.bind(NodeBuffer);
+  }
 
   // Ensure Buffer is available on window if in browser environment
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && !window.Buffer) {
     window.Buffer = target.Buffer;
   }
+
+  return target.Buffer;
 };
 
 // Initialize crypto globally
@@ -34,8 +39,8 @@ const initCrypto = () => {
   }
 };
 
-initBuffer();
+// Initialize Buffer and export it
+const Buffer = initBuffer();
 initCrypto();
 
-// Re-export Buffer for modules that import it directly
 export { Buffer };
