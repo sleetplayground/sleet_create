@@ -131,23 +131,35 @@ export class AccountCreator {
             public_key: publicKey,
             access_key: {
               nonce: 0,
-              permission: 'FullAccess'
+              permission: {
+                type: 'FullAccess'
+              }
             }
           }
         }
       ];
 
-      await selectedWallet.signAndSendTransaction({
-        receiverId: fullAccountId,
-        actions: actions
-      });
+      try {
+        const result = await selectedWallet.signAndSendTransaction({
+          receiverId: fullAccountId,
+          actions: actions
+        });
 
-      return {
-        accountId,
-        publicKey,
-        privateKey,
-        success: true
-      };
+        if (!result) {
+          throw new Error('Transaction was not signed');
+        }
+
+        return {
+          accountId,
+          publicKey,
+          privateKey,
+          success: true,
+          transactionHashes: result.transaction_outcome?.id
+        };
+      } catch (error) {
+        console.error('Transaction signing error:', error);
+        throw new Error(error.message || 'Failed to sign the transaction');
+      }
     } catch (error) {
       console.error('Error creating account:', error);
       return {
@@ -228,6 +240,7 @@ export class AccountCreator {
           }
         ];
 
+        try {
         await selectedWallet.signAndSendTransaction({
           receiverId: fullSubAccountId,
           actions: actions
