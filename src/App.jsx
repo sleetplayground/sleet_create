@@ -13,9 +13,6 @@ function App() {
 
   useEffect(() => {
     wallet.startUp(setSignedAccountId);
-    return () => {
-      wallet.cleanup();
-    };
   }, [wallet]);
 
   const handleNetworkChange = async (newNetwork) => {
@@ -24,7 +21,6 @@ function App() {
       if (!confirmed) return;
       await wallet.signOut();
     }
-    await wallet.cleanup();
     localStorage.setItem('networkId', newNetwork);
     setNetworkId(newNetwork);
     const newWallet = new Wallet({ networkId: newNetwork, createAccessKeyFor: signedAccountId });
