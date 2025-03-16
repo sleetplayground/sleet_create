@@ -1,3 +1,8 @@
+const contractPerNetwork = {
+  mainnet: 'hello.near-examples.near',
+  testnet: 'hello.near-examples.testnet',
+};
+
 // Chains for EVM Wallets
 const evmWalletChains = {
   mainnet: {
@@ -14,10 +19,6 @@ const evmWalletChains = {
   },
 };
 
-export let NetworkId = 'testnet';
+export const NetworkId = 'testnet';
+export const HelloNearContract = contractPerNetwork[NetworkId];
 export const EVMWalletChain = evmWalletChains[NetworkId];
-
-export const setNetworkId = (network) => {
-  NetworkId = network;
-  window.location.reload();
-};
