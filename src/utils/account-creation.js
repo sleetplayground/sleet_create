@@ -27,7 +27,7 @@ export class AccountCreator {
     try {
       this.validateAccountId(accountId);
       
-      const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
+      const networkSuffix = `.${this.wallet.networkId}`;
       const fullAccountId = accountId + networkSuffix;
       
       try {
@@ -89,9 +89,16 @@ export class AccountCreator {
 
   createAccount = async (accountId, providedPublicKey = null) => {
     try {
+      const walletSelector = await this.wallet.selector;
+      const isSignedIn = walletSelector.isSignedIn();
+      
+      if (!isSignedIn) {
+        throw new Error('You must be signed in to create an account');
+      }
+
       this.validateAccountId(accountId);
       
-      const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
+      const networkSuffix = `.${this.wallet.networkId}`;
       const fullAccountId = accountId + networkSuffix;
       
       let publicKey = providedPublicKey;
@@ -103,7 +110,37 @@ export class AccountCreator {
         privateKey = keyPair.privateKey;
       }
       
-      await this.wallet.createAccount(fullAccountId, publicKey);
+      const selectedWallet = await walletSelector.wallet();
+      
+      const actions = [
+        {
+          type: 'CreateAccount',
+          params: {
+            new_account_id: fullAccountId
+          }
+        },
+        {
+          type: 'Transfer',
+          params: {
+            deposit: '1000000000000000000000000' // 1 NEAR in yoctoNEAR
+          }
+        },
+        {
+          type: 'AddKey',
+          params: {
+            public_key: publicKey,
+            access_key: {
+              nonce: 0,
+              permission: 'FullAccess'
+            }
+          }
+        }
+      ];
+
+      await selectedWallet.signAndSendTransaction({
+        receiverId: fullAccountId,
+        actions: actions
+      });
 
       return {
         accountId,
@@ -155,7 +192,7 @@ export class AccountCreator {
 
       this.validateSubAccountId(subAccountId, parentAccountId);
       
-      const networkSuffix = this.wallet.networkId === 'mainnet' ? '.near' : '.testnet';
+      const networkSuffix = `.${this.wallet.networkId}`;
       const fullParentId = parentAccountId.endsWith(networkSuffix) ? parentAccountId : parentAccountId + networkSuffix;
       const fullSubAccountId = `${subAccountId}.${fullParentId}`;
       
