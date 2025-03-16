@@ -1,10 +1,12 @@
 import { Buffer } from 'buffer';
+import { Transform } from 'stream';
 
 // Ensure global objects are available
 if (typeof window !== 'undefined') {
   window.global = window;
   window.process = window.process || { env: {} };
   window.globalThis = window.globalThis || window;
+  window.Transform = Transform;
 }
 
 // Initialize Buffer globally

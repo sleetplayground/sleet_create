@@ -20,7 +20,7 @@ export const recoverKeysFromSeedPhrase = (seedPhrase) => {
       publicKey,
       privateKey: secretKey
     };
-  } catch (error) {
+  } catch {
     throw new Error('Invalid seed phrase');
   }
 };

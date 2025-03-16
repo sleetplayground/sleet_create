@@ -5,7 +5,7 @@ import styles from '@/styles/account-creation.module.css';
 export const SeedPhraseDisplay = ({ seedPhrase, publicKey, privateKey }) => {
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
   const [showPrivateKey, setShowPrivateKey] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(''));
+  const [copySuccess, setCopySuccess] = useState('');
 
   const handleCopy = async (text, type) => {
     try {
