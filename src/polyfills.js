@@ -26,7 +26,16 @@ const initBuffer = () => {
   }
 };
 
+// Initialize crypto globally
+const initCrypto = () => {
+  if (typeof window !== 'undefined') {
+    window.crypto = window.crypto || {};
+    window.crypto.subtle = window.crypto.subtle || {};
+  }
+};
+
 initBuffer();
+initCrypto();
 
 // Re-export Buffer for modules that import it directly
 export { Buffer };
