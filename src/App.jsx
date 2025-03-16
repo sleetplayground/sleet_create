@@ -29,7 +29,7 @@ function App() {
       await newWallet.startUp(setSignedAccountId);
       setWallet(newWallet);
     }
-  };
+  }, [wallet, signedAccountId]);
 
   return (
     <NearContext.Provider value={{ wallet, signedAccountId, networkId, onNetworkChange: handleNetworkChange }}>
