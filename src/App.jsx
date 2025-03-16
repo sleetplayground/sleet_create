@@ -1,14 +1,14 @@
 import { Navigation } from './components/navigation';
 import { Footer } from './components/footer';
 import { MainContent } from './components/main-content';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { NearContext, Wallet } from '@/wallets/near';
 import { NetworkId } from '@/config';
 
 function App() {
   const [signedAccountId, setSignedAccountId] = useState(null);
   const networkId = localStorage.getItem('networkId') || NetworkId;
-  const wallet = new Wallet({ networkId, createAccessKeyFor: signedAccountId });
+  const wallet = useMemo(() => new Wallet({ networkId, createAccessKeyFor: signedAccountId }), [networkId, signedAccountId]);
 
   useEffect(() => {
     wallet.startUp(setSignedAccountId);
@@ -16,7 +16,7 @@ function App() {
 
   const handleNetworkChange = useCallback(async (newNetwork) => {
     if (signedAccountId) {
-      await wallet.signOut();
+      return;
     }
     
     localStorage.setItem('networkId', newNetwork);
