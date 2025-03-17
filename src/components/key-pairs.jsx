@@ -55,7 +55,6 @@ export const KeyPairs = () => {
         <button
           className={styles.button}
           onClick={generateKeyPair}
-          style={{ marginRight: '1rem' }}
         >
           Generate New Key Pair
         </button>

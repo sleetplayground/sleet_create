@@ -7,7 +7,7 @@
   justify-content: center;
   background-color: var(--secondary-color);
   scroll-snap-align: start;
-  padding: 0 1rem;
+  padding: 4rem 1rem;
   box-sizing: border-box;
   overflow-x: hidden;
 }
@@ -32,7 +32,7 @@
 
 .actionArea {
   background-color: rgba(217, 219, 241, 0.1);
-  padding: 1rem;
+  padding: 2rem;
   border-radius: 8px;
   margin-top: 2rem;
   width: 100%;
@@ -51,6 +51,8 @@
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
+  width: 250px;
+  margin: 0.5rem;
 }
 
 .button:hover {
