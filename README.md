@@ -12,9 +12,13 @@ Note: the recommend way for users to create new near accounts is with a near wal
 ### 1. Create Key Pairs
 
 
-### 2. Create 
+### 2. Create Implicit Accounts
 
 
+### 3. Create New NEAR Named Accounts
+
+
+### 4. Create New Subacccounts
 
 
 

@@ -4,7 +4,7 @@ export const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className="text-uppercase">
-        COPYRIGHT 2025 BY SLEET
+        COPYRIGHT 2025 BY SLEET.NEAR
       </div>
     </footer>
   );
