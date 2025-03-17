@@ -13,27 +13,27 @@ export const KeyPairs = () => {
   const saveToMarkdown = () => {
     if (!keyPair) return;
 
-    const content = `# NEAR Key Pair Information
-
-⚠️ **IMPORTANT: Keep this information secure and private!**
-
-## Public Key
-```
-${keyPair.getPublicKey().toString()}
-```
-
-## Private Key
-⚠️ **WARNING: Never share your private key with anyone!**
-```
-${keyPair.toString()}
-```
-
-## Security Notes
-- Store this information in a secure location
-- Never share your private key
-- Make sure to backup this information
-- Required for account recovery
-`;
+    const content = ["# NEAR Key Pair Information",
+      "",
+      "⚠️ **IMPORTANT: Keep this information secure and private!**",
+      "",
+      "## Public Key",
+      "```",
+      keyPair.getPublicKey().toString(),
+      "```",
+      "",
+      "## Private Key",
+      "⚠️ **WARNING: Never share your private key with anyone!**",
+      "```",
+      keyPair.toString(),
+      "```",
+      "",
+      "## Security Notes",
+      "- Store this information in a secure location",
+      "- Never share your private key",
+      "- Make sure to backup this information",
+      "- Required for account recovery"
+    ].join("\n");
 
     const blob = new Blob([content], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
@@ -87,4 +87,3 @@ ${keyPair.toString()}
     </div>
   );
 }
-};
