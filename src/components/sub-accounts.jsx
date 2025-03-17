@@ -1,6 +1,21 @@
+import { useState } from 'react';
 import styles from '@/styles/sub-accounts.module.css';
 
 export const SubAccounts = () => {
+  const [masterAccount, setMasterAccount] = useState('');
+  const [subAccountId, setSubAccountId] = useState('');
+  const [publicKey, setPublicKey] = useState('');
+
+  const getCliCommand = () => {
+    if (!masterAccount || !subAccountId) return '';
+    const fullSubAccountId = `${subAccountId}.${masterAccount}`;
+    let command = `near create-account ${fullSubAccountId} --masterAccount ${masterAccount} --initialBalance 1`;
+    if (publicKey) {
+      command += ` --publicKey ${publicKey}`;
+    }
+    return command;
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Create NEAR Subaccounts</h2>
@@ -9,7 +24,39 @@ export const SubAccounts = () => {
         an existing account to act as the parent account.
       </p>
       <div className={styles.actionArea}>
-        {/* Action buttons and forms will be added here later */}
+        <div className={styles.formGroup}>
+          <input
+            type="text"
+            placeholder="Master Account (e.g., myaccount.near)"
+            value={masterAccount}
+            onChange={(e) => setMasterAccount(e.target.value)}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <input
+            type="text"
+            placeholder="Subaccount ID (e.g., app)"
+            value={subAccountId}
+            onChange={(e) => setSubAccountId(e.target.value)}
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <input
+            type="text"
+            placeholder="Public Key (optional)"
+            value={publicKey}
+            onChange={(e) => setPublicKey(e.target.value)}
+            className={styles.input}
+          />
+        </div>
+        {(masterAccount || subAccountId) && (
+          <div className={styles.cliPreview}>
+            <h3>CLI Command Preview:</h3>
+            <pre>{getCliCommand()}</pre>
+          </div>
+        )}
       </div>
     </div>
   );
