@@ -35,18 +35,29 @@ export const NamedAccounts = () => {
         url: `https://rpc.${networkId}.near.org`
       });
 
-      await provider.query({
-        request_type: 'view_account',
-        account_id: accountId,
-        finality: 'optimistic'
-      });
-      setIsAvailable(false);
-    } catch (error) {
-      if (error.toString().includes('does not exist')) {
-        setIsAvailable(true);
-      } else {
+      try {
+        await provider.query({
+          request_type: 'view_account',
+          account_id: accountId,
+          finality: 'optimistic'
+        });
+        // If the query succeeds, the account exists
         setIsAvailable(false);
+      } catch (error) {
+        const errorMessage = error.toString();
+        // Check if the error indicates the account doesn't exist
+        if (errorMessage.includes('does not exist')) {
+          setIsAvailable(true);
+        } else {
+          // For other errors (network issues, etc), we can't determine availability
+          setIsAvailable(null);
+          console.error('Error checking account availability:', errorMessage);
+        }
       }
+    } catch (error) {
+      // Handle provider initialization errors
+      console.error('Error initializing provider:', error);
+      setIsAvailable(null);
     } finally {
       setIsChecking(false);
     }
