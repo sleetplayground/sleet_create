@@ -7,7 +7,7 @@
   justify-content: center;
   background-color: var(--secondary-color);
   scroll-snap-align: start;
-  padding: 0 2rem;
+  padding: 4rem 2rem;
 }
 
 .title {
@@ -30,7 +30,7 @@
 
 .actionArea {
   background-color: rgba(217, 219, 241, 0.1);
-  padding: 2rem;
+  padding: 3rem 2rem;
   border-radius: 8px;
   margin-top: 2rem;
 }
