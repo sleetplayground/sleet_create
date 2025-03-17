@@ -53,10 +53,3 @@
   white-space: pre-wrap;
   word-break: break-all;
 }
-
-.actionArea {
-  background-color: rgba(217, 219, 241, 0.1);
-  padding: 2rem;
-  border-radius: 8px;
-  margin-top: 2rem;
-}

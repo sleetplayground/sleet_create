@@ -16,9 +16,6 @@ export const ImplicitAccounts = () => {
           </code>
         </p>
       </div>
-      <div className={styles.actionArea}>
-        {/* Action buttons and forms will be added here later */}
-      </div>
     </div>
   );
 };
