@@ -10,18 +10,16 @@ Note: the recommend way for users to create new near accounts is with a near wal
 
 
 ### 1. Create Key Pairs
-Generate a new key pair for your NEAR account. This includes a public key (shared) and private key (secret).
 
-```bash
-near generate-key my-account.testnet
-```
+Generate a new key pair that can be used independently or for future NEAR accounts. This includes a public key (shared) and private key (secret).
+
+
 
 ### 2. Create Implicit Accounts
-Create an account using just a public key - useful for quick testing or temporary accounts.
+Implicit accounts are denoted by a 64 character address, which corresponds to a unique public/private key-pair. 
 
 ```bash
-# First deposit NEAR to the public key-based account
-near send sender.testnet ed25519:GENERATED_PUBLIC_KEY 10
+near account create-account fund-later use-auto-generation save-to-folder ~/.near-credentials/implicit
 ```
 
 ### 3. Create New NEAR Named Accounts
