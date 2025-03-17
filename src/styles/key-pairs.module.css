@@ -19,7 +19,7 @@
 }
 
 .description {
-  color: var(--accent-color);
+  color: var(--dark-accent);
   font-size: 1.1rem;
   margin-bottom: 2rem;
   line-height: 1.5;

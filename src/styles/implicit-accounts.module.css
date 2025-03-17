@@ -7,11 +7,11 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: var(--primary-color);
+  background-color: var(--light-accent);
 }
 
 .title {
-  color: var(--light-accent);
+  color: var(--primary-color);
   font-size: 2rem;
   margin-bottom: 1rem;
   text-transform: uppercase;
