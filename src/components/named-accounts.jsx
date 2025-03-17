@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import styles from '@/styles/named-accounts.module.css';
 import { Wallet } from '@/wallets/near';
 import { NearContract } from '@/config';
-import { NearContext } from '@/App';
+import { NearContext } from '@/wallets/near';
 
 export const NamedAccounts = () => {
   const { networkId } = useContext(NearContext);
