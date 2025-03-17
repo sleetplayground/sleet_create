@@ -6,21 +6,9 @@
   --background-start-rgb: 249, 249, 237;
   --background-end-rgb: 249, 249, 237;
   --primary-color: #313638;
-  --secondary-color: #7d84b2;
-  --accent-color: #8e9dcc;
-  --light-accent: #d9dbf1;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 249, 249, 237;
-    --background-start-rgb: 49, 54, 56;
-    --background-end-rgb: 49, 54, 56;
-    --primary-color: #7d84b2;
-    --secondary-color: #8e9dcc;
-    --accent-color: #d9dbf1;
-    --light-accent: #f9f9ed;
-  }
+  --secondary-color: #5a619e;
+  --accent-color: #424874;
+  --light-accent: #f9f9ed;
 }
 
 * {
@@ -47,10 +35,4 @@ body {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }
