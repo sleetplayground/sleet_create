@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '@/styles/named-accounts.module.css';
 import { Wallet } from '@/wallets/near';
 import { NearContract, NetworkId } from '@/config';
@@ -7,13 +7,27 @@ export const NamedAccounts = () => {
   const [accountId, setAccountId] = useState('');
   const [publicKey, setPublicKey] = useState('');
   const [error, setError] = useState('');
-  const wallet = new Wallet({ networkId: NetworkId });
+  const [wallet, setWallet] = useState(null);
+
+  useEffect(() => {
+    const initWallet = async () => {
+      const walletInstance = new Wallet({ networkId: NetworkId });
+      await walletInstance.startUp(() => {});
+      setWallet(walletInstance);
+    };
+    initWallet();
+  }, []);
 
   const handleCreateAccount = async () => {
     try {
       setError('');
       if (!accountId || !publicKey) {
         setError('Please fill in both account ID and public key');
+        return;
+      }
+
+      if (!wallet) {
+        setError('Wallet is not initialized');
         return;
       }
 
