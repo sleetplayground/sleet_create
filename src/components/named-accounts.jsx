@@ -14,6 +14,7 @@ export const NamedAccounts = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [isAvailable, setIsAvailable] = useState(null);
   const [checkTimeout, setCheckTimeout] = useState(null);
+  const [cliCommand, setCliCommand] = useState('near create-account example.testnet --masterAccount funding-account.testnet --initialBalance 10');
 
   useEffect(() => {
     const initWallet = async () => {
@@ -111,6 +112,14 @@ export const NamedAccounts = () => {
     }
   };
 
+  useEffect(() => {
+    if (accountId) {
+      setCliCommand(`near create-account ${accountId} --masterAccount funding-account.testnet --initialBalance 10`);
+    } else {
+      setCliCommand('near create-account example.testnet --masterAccount funding-account.testnet --initialBalance 10');
+    }
+  }, [accountId]);
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Create NEAR Named Accounts</h2>
@@ -118,6 +127,10 @@ export const NamedAccounts = () => {
         Create a human-readable account name on NEAR. This requires an existing account
         to act as the funding account.
       </p>
+      <div className={styles.cliExample}>
+        <p className={styles.cliTitle}>NEAR CLI Command:</p>
+        <code className={styles.cliCode}>{cliCommand}</code>
+      </div>
       <div className={styles.actionArea}>
         <div className={styles.inputGroup}>
           <input

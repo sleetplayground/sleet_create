@@ -35,6 +35,33 @@
   margin-top: 2rem;
 }
 
+.cliExample {
+  background-color: rgba(217, 219, 241, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 0 auto;
+  max-width: 600px;
+  text-align: left;
+}
+
+.cliTitle {
+  color: var(--dark-accent);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.cliCode {
+  display: block;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  color: var(--light-accent);
+  font-family: monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .inputGroup {
   display: flex;
   flex-direction: column;
