@@ -51,12 +51,10 @@ export const SubAccounts = () => {
             className={styles.input}
           />
         </div>
-        {(masterAccount || subAccountId) && (
-          <div className={styles.cliPreview}>
-            <h3>CLI Command Preview:</h3>
-            <pre>{getCliCommand()}</pre>
-          </div>
-        )}
+        <div className={styles.cliPreview}>
+          <h3>CLI Command Preview:</h3>
+          <pre>{getCliCommand() || 'near create-account app.myaccount.near --masterAccount myaccount.near --initialBalance 1'}</pre>
+        </div>
       </div>
     </div>
   );
