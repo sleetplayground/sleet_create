@@ -8,6 +8,7 @@ Note: the recommend way for users to create new near accounts is with a near wal
 
 ---
 
+## NEAR ACCOUNT CREATION AND LEARNING PLAYGROUND
 
 ### 1. Create Key Pairs
 
