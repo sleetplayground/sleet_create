@@ -116,10 +116,10 @@ export const NamedAccounts = () => {
     if (accountId) {
       const networkSuffix = networkId === 'mainnet' ? 'near' : 'testnet';
       const publicKeyParam = publicKey ? ` --publicKey ${publicKey}` : '';
-      setCliCommand(`near create-account ${accountId} --masterAccount funding-account.${networkSuffix} --initialBalance 10${publicKeyParam}`);
+      setCliCommand(`near create-account ${accountId} --masterAccount funding-account.${networkSuffix} --initialBalance 1${publicKeyParam}`);
     } else {
       const networkSuffix = networkId === 'mainnet' ? 'near' : 'testnet';
-      setCliCommand(`near create-account example.${networkSuffix} --masterAccount funding-account.${networkSuffix} --initialBalance 10`);
+      setCliCommand(`near create-account example.${networkSuffix} --masterAccount funding-account.${networkSuffix} --initialBalance 1`);
     }
   }, [accountId, publicKey, networkId]);
 
