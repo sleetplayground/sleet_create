@@ -4,11 +4,13 @@
 
   --foreground-rgb: 49, 54, 56;
   --background-start-rgb: 249, 249, 237;
-  --background-end-rgb: 249, 249, 237;
+  --background-end-rgb: 255, 255, 255;
   --primary-color: #313638;
-  --secondary-color: #5a619e;
-  --accent-color: #424874;
+  --secondary-color: #7d84b2;
+  --accent-color: #8e9dcc;
   --light-accent: #f9f9ed;
+  --dark-accent: #313638;
+  --purple-light: #d9dbf1;
 }
 
 * {
