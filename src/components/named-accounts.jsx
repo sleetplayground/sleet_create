@@ -114,11 +114,14 @@ export const NamedAccounts = () => {
 
   useEffect(() => {
     if (accountId) {
-      setCliCommand(`near create-account ${accountId} --masterAccount funding-account.testnet --initialBalance 10`);
+      const networkSuffix = networkId === 'mainnet' ? 'near' : 'testnet';
+      const publicKeyParam = publicKey ? ` --publicKey ${publicKey}` : '';
+      setCliCommand(`near create-account ${accountId} --masterAccount funding-account.${networkSuffix} --initialBalance 10${publicKeyParam}`);
     } else {
-      setCliCommand('near create-account example.testnet --masterAccount funding-account.testnet --initialBalance 10');
+      const networkSuffix = networkId === 'mainnet' ? 'near' : 'testnet';
+      setCliCommand(`near create-account example.${networkSuffix} --masterAccount funding-account.${networkSuffix} --initialBalance 10`);
     }
-  }, [accountId]);
+  }, [accountId, publicKey, networkId]);
 
   return (
     <div className={styles.container}>
