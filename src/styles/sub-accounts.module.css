@@ -1,0 +1,36 @@
+.container {
+  text-align: center;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--primary-color);
+}
+
+.title {
+  color: var(--light-accent);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.description {
+  color: var(--accent-color);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.actionArea {
+  background-color: rgba(217, 219, 241, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
