@@ -28,6 +28,32 @@
   margin-right: auto;
 }
 
+.cliInfo {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1rem auto;
+  max-width: 800px;
+}
+
+.cliNote {
+  color: var(--accent-color);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cliCommand {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .actionArea {
   background-color: rgba(217, 219, 241, 0.1);
   padding: 2rem;
