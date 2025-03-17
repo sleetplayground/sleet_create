@@ -13,4 +13,5 @@ export const MainContent = () => {
       <NamedAccounts />
       <SubAccounts />
     </>
+  );
 };
