@@ -33,4 +33,62 @@
   padding: 2rem;
   border-radius: 8px;
   margin-top: 2rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.button {
+  background-color: var(--light-accent);
+  color: var(--secondary-color);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  background-color: var(--dark-accent);
+}
+
+.button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+.keyInfo {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.warningBox {
+  background-color: rgba(255, 87, 51, 0.1);
+  border-left: 4px solid #ff5733;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  color: var(--light-accent);
+  border-radius: 4px;
+}
+
+.keyBox {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.keyBox h3 {
+  color: var(--light-accent);
+  margin-bottom: 0.5rem;
+}
+
+.keyBox pre {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  color: var(--light-accent);
+  font-family: monospace;
 }
