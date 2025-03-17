@@ -1,13 +1,13 @@
 .container {
   text-align: center;
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
+  width: 100vw;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-color: var(--secondary-color);
+  scroll-snap-align: start;
+  padding: 0 2rem;
 }
 
 .title {
