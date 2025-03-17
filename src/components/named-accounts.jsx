@@ -31,6 +31,18 @@ export const NamedAccounts = () => {
         return;
       }
 
+      // Validate account ID format
+      if (!/^[a-z0-9-_]+\.testnet$/.test(accountId) && !/^[a-z0-9-_]+\.near$/.test(accountId)) {
+        setError('Invalid account ID format. Must end with .near or .testnet and contain only lowercase letters, numbers, - or _');
+        return;
+      }
+
+      // Validate public key format
+      if (!/^ed25519:[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{43,44}$/.test(publicKey)) {
+        setError('Invalid public key format. Must start with "ed25519:" followed by base58 characters');
+        return;
+      }
+
       await wallet.callMethod({
         contractId: NearContract,
         method: 'create_account',
@@ -40,7 +52,17 @@ export const NamedAccounts = () => {
         }
       });
     } catch (err) {
-      setError(err.message);
+      // Parse and display user-friendly error message
+      let errorMessage = 'Failed to create account';
+      try {
+        const errorObj = JSON.parse(err.message);
+        if (errorObj.kind && errorObj.kind.account_id) {
+          errorMessage = `Account creation failed: The account ${errorObj.kind.account_id} is not available`;
+        }
+      } catch {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
     }
   };
 
