@@ -3,6 +3,7 @@ import styles from '@/styles/named-accounts.module.css';
 import { Wallet } from '@/wallets/near';
 import { NearContract } from '@/config';
 import { NearContext } from '@/wallets/near';
+import { providers } from 'near-api-js';
 
 export const NamedAccounts = () => {
   const { networkId } = useContext(NearContext);
@@ -10,6 +11,9 @@ export const NamedAccounts = () => {
   const [publicKey, setPublicKey] = useState('');
   const [error, setError] = useState('');
   const [wallet, setWallet] = useState(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(null);
+  const [checkTimeout, setCheckTimeout] = useState(null);
 
   useEffect(() => {
     const initWallet = async () => {
@@ -19,6 +23,34 @@ export const NamedAccounts = () => {
     };
     initWallet();
   }, [networkId]);
+
+  const checkAccountAvailability = async (accountId) => {
+    if (!accountId) {
+      setIsAvailable(null);
+      return;
+    }
+
+    try {
+      const provider = new providers.JsonRpcProvider({
+        url: `https://rpc.${networkId}.near.org`
+      });
+
+      await provider.query({
+        request_type: 'view_account',
+        account_id: accountId,
+        finality: 'optimistic'
+      });
+      setIsAvailable(false);
+    } catch (error) {
+      if (error.toString().includes('does not exist')) {
+        setIsAvailable(true);
+      } else {
+        setIsAvailable(false);
+      }
+    } finally {
+      setIsChecking(false);
+    }
+  };
 
   const handleCreateAccount = async () => {
     try {
@@ -84,7 +116,21 @@ export const NamedAccounts = () => {
             onChange={(e) => {
               const baseAccountId = e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, '');
               const suffix = networkId === 'mainnet' ? 'near' : 'testnet';
-              setAccountId(baseAccountId ? `${baseAccountId}.${suffix}` : '');
+              const newAccountId = baseAccountId ? `${baseAccountId}.${suffix}` : '';
+              setAccountId(newAccountId);
+
+              if (checkTimeout) {
+                clearTimeout(checkTimeout);
+              }
+
+              if (newAccountId) {
+                setIsChecking(true);
+                setCheckTimeout(setTimeout(() => {
+                  checkAccountAvailability(newAccountId);
+                }, 500));
+              } else {
+                setIsAvailable(null);
+              }
             }}
             className={styles.input}
           />
@@ -95,6 +141,9 @@ export const NamedAccounts = () => {
             onChange={(e) => setPublicKey(e.target.value)}
             className={styles.input}
           />
+          {isChecking && <p className={styles.checking}>Checking availability...</p>}
+          {!isChecking && isAvailable === true && accountId && <p className={styles.available}>✓ Account name is available</p>}
+          {!isChecking && isAvailable === false && accountId && <p className={styles.unavailable}>✗ Account name is not available</p>}
           <button
             onClick={handleCreateAccount}
             className={styles.button}
