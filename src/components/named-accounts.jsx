@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import styles from '@/styles/named-accounts.module.css';
 import { Wallet } from '@/wallets/near';
-import { NearContract, NetworkId } from '@/config';
+import { NearContract } from '@/config';
+import { NearContext } from '@/App';
 
 export const NamedAccounts = () => {
+  const { networkId } = useContext(NearContext);
   const [accountId, setAccountId] = useState('');
   const [publicKey, setPublicKey] = useState('');
   const [error, setError] = useState('');
@@ -11,12 +13,12 @@ export const NamedAccounts = () => {
 
   useEffect(() => {
     const initWallet = async () => {
-      const walletInstance = new Wallet({ networkId: NetworkId });
+      const walletInstance = new Wallet({ networkId });
       await walletInstance.startUp(() => {});
       setWallet(walletInstance);
     };
     initWallet();
-  }, []);
+  }, [networkId]);
 
   const handleCreateAccount = async () => {
     try {
@@ -77,9 +79,12 @@ export const NamedAccounts = () => {
         <div className={styles.inputGroup}>
           <input
             type="text"
-            placeholder="Enter account ID (e.g. myaccount.near)"
-            value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
+            placeholder={`Enter account ID (without .${networkId})`}
+            value={accountId.split('.')[0]}
+            onChange={(e) => {
+              const baseAccountId = e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, '');
+              setAccountId(baseAccountId ? `${baseAccountId}.${networkId}` : '');
+            }}
             className={styles.input}
           />
           <input

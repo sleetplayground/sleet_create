@@ -2,7 +2,8 @@ import { Navigation } from './components/navigation';
 import { Footer } from './components/footer';
 import { MainContent } from './components/main-content';
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { NearContext, Wallet } from '@/wallets/near';
+import { Wallet } from '@/wallets/near';
+import { NearContext } from '@/wallets/near';
 import { NetworkId } from '@/config';
 
 function App() {
