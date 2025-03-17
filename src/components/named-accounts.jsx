@@ -79,11 +79,12 @@ export const NamedAccounts = () => {
         <div className={styles.inputGroup}>
           <input
             type="text"
-            placeholder={`Enter account ID (without .${networkId})`}
+            placeholder={`Enter account ID (without .${networkId === 'mainnet' ? 'near' : 'testnet'})`}
             value={accountId.split('.')[0]}
             onChange={(e) => {
               const baseAccountId = e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, '');
-              setAccountId(baseAccountId ? `${baseAccountId}.${networkId}` : '');
+              const suffix = networkId === 'mainnet' ? 'near' : 'testnet';
+              setAccountId(baseAccountId ? `${baseAccountId}.${suffix}` : '');
             }}
             className={styles.input}
           />
