@@ -75,3 +75,6 @@ near call sleetcreate.testnet web4_setStaticUrl '{"url": "ipfs://CID_HERE"}' --a
 near call sleetcreate.near web4_setStaticUrl '{"url": "ipfs://CID_HERE"}' --accountId sleetcreate.near
 
 ```
+
+bafybeian6a5y2kliwmaz7cic3aksdz52uknflbcv6xfd26t56stoxm3pjq
+bafybeidy37p7puzeianyndmkrovwyrz3iswb7dbqaqff5dsezbstmq3ccm
