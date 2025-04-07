@@ -1,7 +1,10 @@
 .obsidian/workspace.json
+.DS_Store
 
 # NODE
 node_modules
 pnpm-lock.yaml
+
+# dist
 dist
-.DS_Store
+dist.car
