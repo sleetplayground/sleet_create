@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "web4_testnet": "web4-deploy dist sleetcreate.testnet --nearfs",
+    "web4_mainnet": "web4-deploy dist sleetcreate.near --nearfs"
   },
   "dependencies": {
     "@near-js/providers": "^1.0.2",
@@ -45,7 +47,8 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^13.24.0",
-    "vite": "^5.0.0"
+    "vite": "^5.0.0",
+    "web4-deploy": "^0.8.0"
   },
   "packageManager": "pnpm@10.6.1"
 }
