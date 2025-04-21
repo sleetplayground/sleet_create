@@ -8,6 +8,20 @@ Note: the recommend way for users to create new near accounts is with a near wal
 
 ---
 
+### DEV
+```sh
+pnpm i
+pnpm dev
+pnpm build
+
+# web4 deploy
+NEAR_SIGNER_KEY=ed25519:your_key_here
+pnpm run web4_testnet
+pnpm run web4_mainnet
+```
+
+---
+
 ## NEAR ACCOUNT CREATION AND LEARNING PLAYGROUND
 
 ### 1. Create Key Pairs
